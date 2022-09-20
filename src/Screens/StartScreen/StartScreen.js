@@ -31,7 +31,7 @@ export default class startscreen extends Component {
             </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.btnKader}
-          onPress={()=>this.props.navigation.navigate('ortu')}>
+          onPress={()=>this.props.navigation.navigate('kader')}>
             <View style={styles.vLogoBtn}>
               <Image
               source={LogoKader}
