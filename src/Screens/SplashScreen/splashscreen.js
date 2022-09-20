@@ -5,7 +5,7 @@ export default class splashscreen extends Component {
   render() {
     return (
       <View>
-        <Text>tes</Text>
+        <Text>Sup</Text>
       </View>
     )
   }

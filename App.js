@@ -18,33 +18,20 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import Splashscreen from './src/Screens/SplashScreen/splashscreen';
+import Navigation from './src/Navigation';
 
 const App = () => {
   return (
       <SafeAreaView style={styles.root}>
-        <Splashscreen/>
+        <Navigation/>
       </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  root: {
+    flex: 1,
+    backgroundColor: '#f3f6f4'
+  }
 });
-
 export default App;
