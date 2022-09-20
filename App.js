@@ -17,13 +17,15 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
+import { LogBox } from 'react-native';
 import Navigation from './src/Navigation';
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
   return (
       <SafeAreaView style={styles.root}>
-        <Navigation/>
+        <Navigation />
       </SafeAreaView>
   );
 };

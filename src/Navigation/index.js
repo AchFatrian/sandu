@@ -11,10 +11,10 @@ const Navigation = () => {
     return (
         <NavigationContainer style= {{flex: 1}}>
             <Stack.Navigator
-            initialRouteName='Splash'
+            initialRouteName='splash'
             screenOptions={{headerShown: false}}>
-                <Stack.Screen name="Splash" component={Splashscreen} />
-                <Stack.Screen name="Start" component={StartScreen} />
+                <Stack.Screen name="splash" component={Splashscreen} />
+                <Stack.Screen name="start" component={StartScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
