@@ -8,13 +8,19 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default class startscreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  
   render() {
     return (
       <View style= {styles.root}>
         <Image
         source={Logo}
         style={styles.logo}/>
-        <TouchableOpacity style={styles.btnOrtu}>
+        <TouchableOpacity style={styles.btnOrtu}
+         onPress={()=>this.props.navigation.navigate('ortu')}>
             <View style={styles.vLogoBtn}>
               <Image
               source={LogoOrtu}
@@ -24,7 +30,8 @@ export default class startscreen extends Component {
               <Text style={styles.textBtn}>Orang Tua</Text>
             </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btnKader}>
+        <TouchableOpacity style={styles.btnKader}
+          onPress={()=>this.props.navigation.navigate('ortu')}>
             <View style={styles.vLogoBtn}>
               <Image
               source={LogoKader}
