@@ -8,11 +8,16 @@ import { Text,
   Keyboard, } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto5.png'
+import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function OrtuScreen() {
+  const navigation = useNavigation('');
+  const onDaftarPress = () => {
+    navigation.navigate('daftar');
+  }
   const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
   useEffect(() => {
       Keyboard.addListener("keyboardDidShow", () => {
@@ -31,14 +36,15 @@ return (
                   <Image source={Logo} style={styles.logo}/>
               ) : null
           }
-          <Text style={styles.tName}>NIK ANAK:</Text>
+          <Text style={styles.tName}>NIK ANAK :</Text>
           <TextInput style={styles.txtInput}/>
           <TouchableOpacity style={styles.btnLogin}>
               <Text style={styles.btnCap}>Login</Text>
           </TouchableOpacity>
           <View style={styles.vDaftar}>
             <Text style={styles.tcap1}>Belum Punya Akun?</Text>
-            <TouchableOpacity style={styles.tDaftar}>
+            <TouchableOpacity style={styles.tDaftar} 
+            onPress={onDaftarPress}>
               <Text style={styles.tcap2}>Daftar disini</Text>
             </TouchableOpacity>
           </View>
@@ -69,7 +75,7 @@ const styles = StyleSheet.create({
       fontSize: windowWidth * 0.04,
       fontWeight: '600',
       color: 'black',
-      marginRight: windowWidth * 0.51,
+      marginRight: windowWidth * 0.5,
       marginBottom: windowHeight * 0.007,
   },
 
