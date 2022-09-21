@@ -9,7 +9,7 @@ import { Text,
     Keyboard,
     TouchableWithoutFeedback } from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto4.png'
 
 const windowWidth = Dimensions.get('window').width;
@@ -17,35 +17,44 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function KaderScreen() {
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", () => {
+            setIsKeyboardVisible(true);
+        })
+        Keyboard.addListener("keyboardDidHide", () => {
+            setIsKeyboardVisible(false);
+        })
+    }, [isKeyboarVisible])
+
   return (
-        <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}>
-            <Text style={styles.title}>KADER</Text>
-            <Image
-            source={Logo}
-            style={styles.logo}/>
-            <Text style={styles.tName}>Nama Posyandu:</Text>
-            <TouchableWithoutFeedback>
+        <View style={styles.container}>
+                <Text style={styles.title}>KADER</Text>
+                {
+                    (!isKeyboarVisible) ? (
+                    <Image
+                        source={Logo}
+                        style={styles.logo}/>
+                        ) : null
+                }
+                <Text style={styles.tName}>Nama Posyandu:</Text>
                 <TextInput
-                style={styles.txtInput}
-                onPress={Keyboard.dismiss}/>
-            </TouchableWithoutFeedback>
-            <Text style={styles.tPass}>Password:</Text>
-            <TextInput
-            style={styles.txtPass}
-            secureTextEntry={!passwordVisible}/>
-            <View style={styles.vCheckbox}>
-                <CheckBox
-                value={passwordVisible}
-                onValueChange={setPasswordVisible}
-                style={styles.checkbox}/>
-                <Text style={styles.label}>Tampilkan Password</Text>
-            </View>
-            <TouchableOpacity style={styles.btnLogin}>
-                <Text style={styles.btnCap}>Login</Text>
-            </TouchableOpacity>
-        </KeyboardAvoidingView>
+                style={styles.txtInput}/>
+                <Text style={styles.tPass}>Password:</Text>
+                <TextInput
+                style={styles.txtPass}
+                secureTextEntry={!passwordVisible}/>
+                <View style={styles.vCheckbox}>
+                    <CheckBox
+                    value={passwordVisible}
+                    onValueChange={setPasswordVisible}
+                    style={styles.checkbox}/>
+                    <Text style={styles.label}>Tampilkan Password</Text>
+                </View>
+                <TouchableOpacity style={styles.btnLogin}>
+                    <Text style={styles.btnCap}>Login</Text>
+                </TouchableOpacity>
+        </View>
         
      
   )
@@ -56,6 +65,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
     },
+
 
     title: {
         fontSize: windowWidth * 0.07,
@@ -125,5 +135,6 @@ const styles = StyleSheet.create({
     btnCap:{
         fontSize: windowWidth *0.055,
         color: 'white',
-    }
+    },
+
 })
