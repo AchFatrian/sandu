@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { StackActions } from '@react-navigation/native'
 import Logo from '../../../assets/img/sandu.png'
 
-class splashscreen extends Component {
+class SplashScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -40,4 +40,4 @@ const styles = StyleSheet.create({
 }
 
 })
-export default splashscreen;
+export default SplashScreen;

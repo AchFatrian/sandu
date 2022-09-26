@@ -7,7 +7,7 @@ import LogoKader from '../../../assets/img/foto3.png'
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default class startscreen extends Component {
+export default class StartScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {};
