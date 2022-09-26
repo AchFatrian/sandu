@@ -6,6 +6,7 @@ import Splashscreen from '../Screens/SplashScreen';
 import StartScreen from '../Screens/StartScreen';
 import OrtuScreen from '../Screens/OrtuScreen';
 import KaderScreen from '../Screens/KaderScreen';
+import DaftarScreen from '../Screens/DaftarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ const Navigation = () => {
                 <Stack.Screen name="start" component={StartScreen} />
                 <Stack.Screen name="ortu" component={OrtuScreen} />
                 <Stack.Screen name="kader" component={KaderScreen} />
+                <Stack.Screen name="daftar" component={DaftarScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
