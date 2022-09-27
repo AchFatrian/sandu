@@ -5,14 +5,38 @@ import { Text,
     Image, 
     TextInput, 
     TouchableOpacity, 
-    Keyboard, } from 'react-native'
+    Keyboard,
+    Button } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function KaderScreen() {
+    const [date, setDate] = useState(new Date(1598051730000));
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+  
+    const onChange = (event, selectedDate) => {
+      const currentDate = selectedDate;
+      setShow(false);
+      setDate(currentDate);
+    };
+  
+    const showMode = (currentMode) => {
+      if (Platform.OS === 'android') {
+        setShow(true);
+      }
+      setMode(currentMode);
+    };
+  
+    const showDatepicker = () => {
+      showMode('date');
+    };
+  
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", () => {
@@ -38,6 +62,19 @@ export default function KaderScreen() {
             <TextInput style={styles.txtInput}/>
             <Text style={styles.tNik}>NIK Anak :</Text>
             <TextInput style={styles.txtInput}/>
+            <Text style={styles.tTanggal}>Tanggal Lahir Anak :</Text>
+            <TouchableOpacity style={styles.tanggal} onPress={showDatepicker}>
+                <Text style={styles.txtTanggal}> {date.toLocaleDateString()}</Text>
+                    {show && (
+                        <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        onChange={onChange}
+                        />
+                    )}
+            </TouchableOpacity>
             <TouchableOpacity style={styles.btnLogin}>
                 <Text style={styles.btnCap}>Daftar</Text>
             </TouchableOpacity>
@@ -90,12 +127,21 @@ const styles = StyleSheet.create({
         marginBottom: windowHeight * 0.007,
     },
 
+    tTanggal:{
+        fontSize: windowWidth * 0.04,
+        fontWeight: '600',
+        color: 'black',
+        marginRight: windowWidth * 0.34,
+        marginBottom: windowHeight * 0.007,
+    },
+
     txtInput: {
         width: windowWidth * 0.7,
-        height: windowHeight * 0.06,
+        height: windowHeight * 0.052,
         backgroundColor: '#4397af33',
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
+        fontSize: windowWidth * 0.03,
     },
 
     btnLogin:{
@@ -113,4 +159,17 @@ const styles = StyleSheet.create({
         color: 'white',
     },
 
+    tanggal:{
+        width: windowWidth * 0.7,
+        height: windowHeight * 0.052,
+        backgroundColor: '#4397af33',
+        borderRadius: 8,
+        marginBottom: windowHeight * 0.007,
+        justifyContent: 'center',
+    },
+
+    txtTanggal:{
+        fontSize: windowWidth * 0.03,
+        color: 'black',
+    },
 })
