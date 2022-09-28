@@ -5,15 +5,65 @@ import { Text,
     Image, 
     TextInput, 
     TouchableOpacity, 
-    Keyboard, } from 'react-native'
+    Keyboard, Alert } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
+import { useNavigation } from '@react-navigation/native';
+
+const axios = require('axios')
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function KaderScreen() {
+    const navigation = useNavigation('');
+
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+    const [parentsName, setParentsName ] = useState('')
+    const [phoneNum, setPhoneNum] = useState('')
+    const [childsName, setChildName] = useState('')
+    const [childsNik, setChildNik] = useState('')
+
+    const register = async () => {
+        if(parentsName != '' && phoneNum != '' &&  childsName != '' && childsNik != ''){
+            const regisData = {
+                childs_name: childsName,
+                childs_birth: 29839238, // tambahan
+                parents_name: parentsName,
+                parents_phone: phoneNum, // tambahan
+                childs_nik: childsNik,
+                address: "jl.kskdsdjskdjsksd",
+                posyandu_name: "Psyandu keren",
+                posyandu_address: "jl.kajsakjskasjak",
+            }
+
+            // console.log(regisData)
+            //axios
+            axios.post(`https://sandu-api-production.up.railway.app/api/users`, regisData)
+            .then((result) => {
+                // console.log(result)
+                navigation.navigate('ortu');
+            }).catch((err) => {
+                console.log(err)
+            });
+
+        } else {
+            return(
+                Alert.alert(
+                    "Pendaftaran Gagal",
+                    "Pastikan Semua Data Telah Terisi",
+                    [
+                      {
+                        text: "Kembali",
+                        onPress: () => console.log("Cancel Pressed"),
+                        style: "cancel"
+                      }
+                    ]
+                  )
+            )
+        }
+    }
+
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", () => {
             setIsKeyboardVisible(true);
@@ -31,14 +81,18 @@ export default function KaderScreen() {
                 ) : null
             }
             <Text style={styles.tName}>Nama Orang Tua :</Text>
-            <TextInput style={styles.txtInput}/>
+            <TextInput style={styles.txtInput} onChangeText={setParentsName} value={parentsName}/>
+
             <Text style={styles.tNoHP}>No HP :</Text>
-            <TextInput style={styles.txtInput}/>
+            <TextInput style={styles.txtInput} onChangeText={setPhoneNum} value={phoneNum}/>
+            
             <Text style={styles.tAnak}>Nama Anak :</Text>
-            <TextInput style={styles.txtInput}/>
+            <TextInput style={styles.txtInput} onChangeText={setChildName} value={childsName}/>
+
             <Text style={styles.tNik}>NIK Anak :</Text>
-            <TextInput style={styles.txtInput}/>
-            <TouchableOpacity style={styles.btnLogin}>
+            <TextInput style={styles.txtInput} onChangeText={setChildNik} value={childsNik}/>
+            
+            <TouchableOpacity style={styles.btnLogin} onPress={()=>register()}>
                 <Text style={styles.btnCap}>Daftar</Text>
             </TouchableOpacity>
         </View>

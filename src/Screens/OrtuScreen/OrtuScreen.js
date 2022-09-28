@@ -5,20 +5,52 @@ import { Text,
   Image, 
   TextInput, 
   TouchableOpacity, 
-  Keyboard, } from 'react-native'
+  Keyboard, Alert } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto5.png'
 import { useNavigation } from '@react-navigation/native';
 
+const axios = require('axios')
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function OrtuScreen() {
+export default function OrtuScreen() {  
   const navigation = useNavigation('');
+
+  const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+  const [childsNik, setChildNik] = useState('')
+
   const onDaftarPress = () => {
     navigation.navigate('daftar');
   }
-  const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+  
+  const getAlert = (title, message, button) => {
+    return(
+      Alert.alert(
+        title, message,
+        [{ text: button }]
+      )
+    )
+  }
+
+  const login = async () => {
+    if (childsNik != '') {
+      axios.get(`https://sandu-api-production.up.railway.app/api/users/login/${Number(childsNik)}`)
+        .then((result) => {
+          if(result.data.length() == 0 && result.data != null){
+            console.log(result)
+            // navigation.navigate('ortu');
+          } else {
+            getAlert("Login gagal", "Pastikan NIK benar dan telah terdaftar", "kembali")
+          }
+        }).catch((err) => {
+          getAlert("Login gagal", "Pastikan NIK benar dan telah terdaftar", "kembali")
+        });
+    } else {
+      getAlert("Login Gagal", "Pastikan NIK Telah Terisi", "kembali")
+    }
+  }
+
   useEffect(() => {
       Keyboard.addListener("keyboardDidShow", () => {
           setIsKeyboardVisible(true);
@@ -37,8 +69,8 @@ return (
               ) : null
           }
           <Text style={styles.tName}>NIK ANAK :</Text>
-          <TextInput style={styles.txtInput}/>
-          <TouchableOpacity style={styles.btnLogin}>
+          <TextInput style={styles.txtInput} onChangeText={setChildNik} value={childsNik}/>
+          <TouchableOpacity style={styles.btnLogin} onPress={()=>login()}>
               <Text style={styles.btnCap}>Login</Text>
           </TouchableOpacity>
           <View style={styles.vDaftar}>
