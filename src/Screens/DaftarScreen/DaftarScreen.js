@@ -10,7 +10,7 @@ import { Text,
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import {Picker} from '@react-native-picker/picker';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -19,7 +19,8 @@ export default function KaderScreen() {
     const [date, setDate] = useState(new Date(1598051730000));
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
-  
+    const [country, setCountry] = useState('Unknown');
+   
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate;
       setShow(false);
@@ -172,4 +173,21 @@ const styles = StyleSheet.create({
         fontSize: windowWidth * 0.03,
         color: 'black',
     },
+
+    tKelamin:{
+        fontSize: windowWidth * 0.04,
+        fontWeight: '600',
+        color: 'black',
+        marginRight: windowWidth * 0.32,
+        marginBottom: windowHeight * 0.007,
+    },
+
+    picker: {
+        width: windowWidth * 0.7,
+        height: windowHeight * 0.01,
+        backgroundColor: '#4397af33',
+        borderRadius: 8,
+        marginBottom: windowHeight * 0.007,
+        fontSize: windowWidth * 0.02,
+      },
 })

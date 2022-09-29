@@ -9,13 +9,18 @@ import { Text,
 import CheckBox from '@react-native-community/checkbox';
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto4.png'
+import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function KaderScreen() {
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false);
+    const navigation = useNavigation('');
+        const onLoginPress = () => {
+        navigation.navigate('listAnak');
+    }
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", () => {
             setIsKeyboardVisible(true);
@@ -44,7 +49,7 @@ export default function KaderScreen() {
                 style={styles.checkbox}/>
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
-            <TouchableOpacity style={styles.btnLogin}>
+            <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
                 <Text style={styles.btnCap}>Login</Text>
             </TouchableOpacity>
         </View>
