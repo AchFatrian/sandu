@@ -21,31 +21,19 @@ export default function ListAnakScreen() {
                 <InputAnak
                     onPress={onInputPress}
                     nama={'Cahyo Arrisabarno'}
-                    tinggi={'60 CM'}
-                    berat={'18 Kg'}
-                    umur={26}
-                    status={'Sehat'}/>
+                    nik={'35xxxxxxxxxxxxxx'}/>
                 <InputAnak
                     onPress={onInputPress}
                     nama={'Achmad Fatrian'}
-                    tinggi={'40 CM'}
-                    berat={'14 Kg'}
-                    umur={26}
-                    status={'Sehat'}/>
+                    nik={'35xxxxxxxxxxxxxx'}/>
                 <InputAnak
                     onPress={onInputPress}
                     nama={'M Imam Wahyuda'}
-                    tinggi={'30 CM'}
-                    berat={'10 Kg'}
-                    umur={36}
-                    status={'Sakit'}/>
+                    nik={'35xxxxxxxxxxxxxx'}/>
                 <InputAnak
                     onPress={onInputPress}
                     nama={'Jasmine Azzahra'}
-                    tinggi={'60 CM'}
-                    berat={'18 Kg'}
-                    umur={26}
-                    status={'Sehat'}/>
+                    nik={'35xxxxxxxxxxxxxx'}/>
             </ScrollView>
         </View>
     </View>
