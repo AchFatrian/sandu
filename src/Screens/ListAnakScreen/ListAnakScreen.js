@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import React from 'react'
 import InputAnak from '../../component/InputAnak/InputAnak'
 import { useNavigation } from '@react-navigation/native';
@@ -8,8 +8,8 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function ListAnakScreen() {
     const navigation = useNavigation('');
-        const onInputPress = () => {
-        navigation.navigate('input');
+        const onMenuPress = () => {
+        navigation.navigate('menu');
         }
   return (
     <View style={styles.container}>
@@ -19,22 +19,25 @@ export default function ListAnakScreen() {
             </View>
             <ScrollView style={styles.scrollContainer}>
                 <InputAnak
-                    onPress={onInputPress}
+                    onPress={onMenuPress}
                     nama={'Cahyo Arrisabarno'}
                     nik={'35xxxxxxxxxxxxxx'}/>
                 <InputAnak
-                    onPress={onInputPress}
+                    onPress={onMenuPress}
                     nama={'Achmad Fatrian'}
                     nik={'35xxxxxxxxxxxxxx'}/>
                 <InputAnak
-                    onPress={onInputPress}
+                    onPress={onMenuPress}
                     nama={'M Imam Wahyuda'}
                     nik={'35xxxxxxxxxxxxxx'}/>
                 <InputAnak
-                    onPress={onInputPress}
+                    onPress={onMenuPress}
                     nama={'Jasmine Azzahra'}
                     nik={'35xxxxxxxxxxxxxx'}/>
             </ScrollView>
+            <TouchableOpacity style={styles.btnLogOut}>
+                <Text style={styles.btnCap}>Logout</Text>
+            </TouchableOpacity>
         </View>
     </View>
   )
@@ -65,9 +68,26 @@ const styles = StyleSheet.create({
         width: '92%',
         backgroundColor: '#4397af33',
         borderRadius: 20,
+        alignItems: 'center',
     },
 
     scrollContainer: {
         flex: 1, 
     },
+
+    btnLogOut:{
+        marginTop: windowHeight *0.03,
+        width: windowWidth * 0.35,
+        height: windowHeight * 0.05,
+        backgroundColor: '#4397AF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius:29,
+        marginBottom: windowHeight * 0.05,
+    },
+
+    btnCap:{
+        fontSize: windowWidth *0.055,
+        color: 'white',
+    }
 })

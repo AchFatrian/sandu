@@ -9,6 +9,7 @@ import KaderScreen from '../Screens/KaderScreen';
 import DaftarScreen from '../Screens/DaftarScreen';
 import ListAnakScreen from '../Screens//ListAnakScreen';
 import InputDataScreen from '../Screens/InputDataScreen/InputDataScreen';
+import MenuScreen from '../Screens/MenuScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ const Navigation = () => {
                 <Stack.Screen name="kader" component={KaderScreen} />
                 <Stack.Screen name="daftar" component={DaftarScreen} />
                 <Stack.Screen name="listAnak" component={ListAnakScreen} />
+                <Stack.Screen name="menu" component={MenuScreen} />
                 <Stack.Screen name="input" component={InputDataScreen} />
             </Stack.Navigator>
         </NavigationContainer>

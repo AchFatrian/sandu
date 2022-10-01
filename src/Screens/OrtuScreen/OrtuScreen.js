@@ -85,6 +85,8 @@ const styles = StyleSheet.create({
       backgroundColor: '#4397af33',
       borderRadius: 8,
       marginBottom: windowHeight * 0.007,
+      borderColor: '#4397AF',
+      borderWidth: 1,
   },
 
   btnLogin:{

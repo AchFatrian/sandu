@@ -143,6 +143,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
         fontSize: windowWidth * 0.03,
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     btnLogin:{
@@ -167,6 +169,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
         justifyContent: 'center',
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     txtTanggal:{
