@@ -18,6 +18,11 @@ export default function OrtuScreen() {
   const onDaftarPress = () => {
     navigation.navigate('daftar');
   }
+
+  const onLoginPress = () => {
+    navigation.navigate('riwayat');
+  }
+
   const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
   useEffect(() => {
       Keyboard.addListener("keyboardDidShow", () => {
@@ -38,7 +43,7 @@ return (
           }
           <Text style={styles.tName}>NIK ANAK :</Text>
           <TextInput style={styles.txtInput}/>
-          <TouchableOpacity style={styles.btnLogin}>
+          <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
               <Text style={styles.btnCap}>Login</Text>
           </TouchableOpacity>
           <View style={styles.vDaftar}>
