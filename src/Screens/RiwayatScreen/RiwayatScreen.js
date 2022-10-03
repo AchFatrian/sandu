@@ -17,7 +17,7 @@ export default function RiwayatScreen() {
                 tanggal={'09-12-2022'}/>
         </ScrollView>
         <TouchableOpacity style={styles.btnLogOut}>
-                <Text style={styles.btnCap}>Logout</Text>
+                <Text style={styles.btnCap}>Keluar</Text>
         </TouchableOpacity>
       </View>
     </View>

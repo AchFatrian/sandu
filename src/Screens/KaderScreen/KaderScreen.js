@@ -50,7 +50,7 @@ export default function KaderScreen() {
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
             <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
-                <Text style={styles.btnCap}>Login</Text>
+                <Text style={styles.btnCap}>Masuk</Text>
             </TouchableOpacity>
         </View>
   )

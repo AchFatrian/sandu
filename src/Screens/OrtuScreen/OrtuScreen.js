@@ -44,7 +44,7 @@ return (
           <Text style={styles.tName}>NIK ANAK :</Text>
           <TextInput style={styles.txtInput}/>
           <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
-              <Text style={styles.btnCap}>Login</Text>
+              <Text style={styles.btnCap}>Masuk</Text>
           </TouchableOpacity>
           <View style={styles.vDaftar}>
             <Text style={styles.tcap1}>Belum Punya Akun?</Text>

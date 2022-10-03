@@ -36,7 +36,7 @@ export default function ListAnakScreen() {
                     nik={'35xxxxxxxxxxxxxx'}/>
             </ScrollView>
             <TouchableOpacity style={styles.btnLogOut}>
-                <Text style={styles.btnCap}>Logout</Text>
+                <Text style={styles.btnCap}>Keluar</Text>
             </TouchableOpacity>
         </View>
     </View>
