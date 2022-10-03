@@ -14,6 +14,7 @@ import RiwayatScreen from '../Screens/RiwayatScreen';
 import InputBeratScreen from '../Screens/InputBeratScreen';
 import InputTinggiScreen from '../Screens/InputTinggiScreen';
 import PreviewScreen from '../Screens/PreviewScreen';
+import RiwayatAnakScreen from '../Screens/RiwayatAnakScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,7 @@ const Navigation = () => {
                 <Stack.Screen name="berat" component={InputBeratScreen} />
                 <Stack.Screen name="tinggi" component={InputTinggiScreen} />
                 <Stack.Screen name="preview" component={PreviewScreen} />
+                <Stack.Screen name="riwayatAnak" component={RiwayatAnakScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

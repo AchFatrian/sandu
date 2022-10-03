@@ -10,13 +10,22 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function MenuScreen() {
     const navigation = useNavigation('');
+
     const onInputPress = () => {
         navigation.navigate('berat');
     }
-  return (
+
+    const onBackPress = () => {
+        navigation.navigate('listAnak');
+    }
+
+    const onLihatPress = () => {
+        navigation.navigate('riwayatAnak');
+    }
+    return (
     <View style={styles.container}>
       <View style={styles.control}>
-        <TouchableOpacity style={styles.tBackImg}>
+        <TouchableOpacity style={styles.tBackImg} onPress={onBackPress}>
             <Image source={Back} style={styles.backImg}/>
         </TouchableOpacity>
         <View style={styles.containerNama} >
@@ -26,7 +35,7 @@ export default function MenuScreen() {
                 <Text style={styles.txtNik}>35xxxxxxxxxxx</Text>
            </View>
         </View>
-        <TouchableOpacity style={styles.tBtn}>
+        <TouchableOpacity style={styles.tBtn} onPress={onLihatPress}>
             <Text style={styles.txtCap}>Lihat Data</Text>
             <Image source={Lihat} style={styles.iLihat}/>
         </TouchableOpacity>
