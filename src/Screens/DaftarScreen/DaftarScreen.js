@@ -10,7 +10,8 @@ import { Text,
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {Picker} from '@react-native-picker/picker';
+import RadioGroup from 'react-native-radio-buttons-group';
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -20,6 +21,22 @@ export default function KaderScreen() {
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [country, setCountry] = useState('Unknown');
+    const [radioButtons, setRadioButtons] = useState([
+        {
+            id: '0', // acts as primary key, should be unique and non-empty string
+            label: 'Laki-laki',
+            value: 'laki',
+            borderColor: '#4397AF',
+            color:'#4397AF'
+        },
+        {
+            id: '1',
+            label: 'Perempuan',
+            value: 'perempuan',
+            borderColor: '#4397AF',
+            color:'#4397AF'
+        }
+    ]);
    
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate;
@@ -47,6 +64,10 @@ export default function KaderScreen() {
             setIsKeyboardVisible(false);
         })
     }, [isKeyboarVisible])
+
+    function onPressRadioButton(radioButtonsArray) {
+        setRadioButtons(radioButtonsArray);
+    }
 
   return (
         <View style={styles.container}>
@@ -76,6 +97,14 @@ export default function KaderScreen() {
                         />
                     )}
             </TouchableOpacity>
+            <Text style={styles.tGender}>Jenis Kelamin Anak :</Text>
+            <View style={styles.vGender}>
+                <RadioGroup 
+                    radioButtons={radioButtons} 
+                    onPress={onPressRadioButton} 
+                    layout='row'
+                />
+            </View>
             <TouchableOpacity style={styles.btnLogin}>
                 <Text style={styles.btnCap}>Daftar</Text>
             </TouchableOpacity>
@@ -136,6 +165,14 @@ const styles = StyleSheet.create({
         marginBottom: windowHeight * 0.007,
     },
 
+    tGender: {
+        fontSize: windowWidth * 0.04,
+        fontWeight: '600',
+        color: 'black',
+        marginRight: windowWidth * 0.32,
+        marginBottom: windowHeight * 0.007,
+    },
+
     txtInput: {
         width: windowWidth * 0.7,
         height: windowHeight * 0.052,
@@ -148,7 +185,7 @@ const styles = StyleSheet.create({
     },
 
     btnLogin:{
-        marginTop: windowHeight *0.03,
+        marginTop: windowHeight *0.01,
         width: windowWidth * 0.35,
         height: windowHeight * 0.05,
         backgroundColor: '#4397AF',
@@ -186,12 +223,10 @@ const styles = StyleSheet.create({
         marginBottom: windowHeight * 0.007,
     },
 
-    picker: {
+    vGender:{
         width: windowWidth * 0.7,
-        height: windowHeight * 0.01,
-        backgroundColor: '#4397af33',
-        borderRadius: 8,
-        marginBottom: windowHeight * 0.007,
-        fontSize: windowWidth * 0.02,
-      },
+        height: windowHeight * 0.052,
+        // backgroundColor: '#4397af33',
+        // flexDirection: 'row',
+    },
 })
