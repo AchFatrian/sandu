@@ -14,6 +14,7 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 
 // const axios = require('axios')
+import {Picker} from '@react-native-picker/picker';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -30,7 +31,8 @@ export default function KaderScreen() {
     const [phoneNum, setPhoneNum] = useState('')
     const [childsName, setChildName] = useState('')
     const [childsNik, setChildNik] = useState('')
-  
+    // const [birthDate, setBirthDate] = useState('')
+   
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate;
       setShow(false);
@@ -48,6 +50,15 @@ export default function KaderScreen() {
       showMode('date');
     };
 
+    const getAlert = (title, message, button) => {
+        return(
+          Alert.alert(
+            title, message,
+            [{ text: button }]
+          )
+        )
+      }
+
     const register = async () => {
         if(parentsName != '' && phoneNum != '' &&  childsName != '' && childsNik != ''){
             const regisData = {
@@ -56,9 +67,7 @@ export default function KaderScreen() {
                 parents_name: parentsName,
                 parents_phone: phoneNum, // tambahan
                 childs_nik: childsNik,
-                address: "jl.kskdsdjskdjsksd",
-                posyandu_name: "Psyandu keren",
-                posyandu_address: "jl.kajsakjskasjak",
+                childs_birth: date
             }
 
             // console.log(regisData)
@@ -66,25 +75,18 @@ export default function KaderScreen() {
             axios.post(`https://sandu-api-production.up.railway.app/api/users`, regisData)
             .then((result) => {
                 // console.log(result)
-                navigation.navigate('ortu');
+                if(result.status == 'Authorized'){
+                    navigation.navigate('ortu');
+                }
+                else {
+                    getAlert("Pendaftaran gagal", "Pastikan data telah terisi dengan benar", "kembali")
+                }
             }).catch((err) => {
                 console.log(err)
             });
 
         } else {
-            return(
-                Alert.alert(
-                    "Pendaftaran Gagal",
-                    "Pastikan Semua Data Telah Terisi",
-                    [
-                      {
-                        text: "Kembali",
-                        onPress: () => console.log("Cancel Pressed"),
-                        style: "cancel"
-                      }
-                    ]
-                  )
-            )
+            getAlert("Pendaftaran Gagal", "Pastikan Semua Data Telah Terisi", "kembali")
         }
     }
 
@@ -116,7 +118,6 @@ export default function KaderScreen() {
             <Text style={styles.tNik}>NIK Anak :</Text>
             <TextInput style={styles.txtInput} onChangeText={setChildNik} value={childsNik}/>
 
-            <TextInput style={styles.txtInput}/>
             <Text style={styles.tTanggal}>Tanggal Lahir Anak :</Text>
             <TouchableOpacity style={styles.tanggal} onPress={showDatepicker}>
                 <Text style={styles.txtTanggal}> {date.toLocaleDateString()}</Text>
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     },
 
     tName:{
-        fontSize: windowWidth * 0.04,
+        fontSize: windowWidth * 0.045,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.39,
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
     },
 
     tNoHP: {
-        fontSize: windowWidth * 0.04,
+        fontSize: windowWidth * 0.045,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.57,
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     },
 
     tAnak: {
-        fontSize: windowWidth * 0.04,
+        fontSize: windowWidth * 0.045,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.47,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     },
 
     tNik:{ 
-        fontSize: windowWidth * 0.04,
+        fontSize: windowWidth * 0.045,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.51,
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     },
 
     tTanggal:{
-        fontSize: windowWidth * 0.04,
+        fontSize: windowWidth * 0.045,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.34,
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#4397af33',
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
-        fontSize: windowWidth * 0.03,
+        fontSize: windowWidth * 0.045,
     },
 
     btnLogin:{
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     },
 
     btnCap:{
-        fontSize: windowWidth *0.055,
+        fontSize: windowWidth *0.0545,
         color: 'white',
     },
 
@@ -225,7 +226,24 @@ const styles = StyleSheet.create({
     },
 
     txtTanggal:{
-        fontSize: windowWidth * 0.03,
+        fontSize: windowWidth * 0.045,
         color: 'black',
     },
+
+    tKelamin:{
+        fontSize: windowWidth * 0.045,
+        fontWeight: '600',
+        color: 'black',
+        marginRight: windowWidth * 0.32,
+        marginBottom: windowHeight * 0.007,
+    },
+
+    picker: {
+        width: windowWidth * 0.7,
+        height: windowHeight * 0.01,
+        backgroundColor: '#4397af33',
+        borderRadius: 8,
+        marginBottom: windowHeight * 0.007,
+        fontSize: windowWidth * 0.045,
+      },
 })

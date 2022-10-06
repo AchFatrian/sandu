@@ -5,17 +5,50 @@ import { Text,
     Image, 
     TextInput, 
     TouchableOpacity, 
-    Keyboard, } from 'react-native'
+    Keyboard, Alert} from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto4.png'
+import { useNavigation } from '@react-navigation/native';
 
+const axios = require('axios')
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function KaderScreen() {
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const navigation = useNavigation('');
+
+    const getAlert = (title, message, button) => {
+        return(
+          Alert.alert(
+            title, message,
+            [{ text: button }]
+          )
+        )
+      }
+
+    const onLoginPress = () => {
+        if (username != '' && password != '') {
+            axios.post(`https://sandu-api-production.up.railway.app/api/kader/login`, {username, password})
+              .then((result) => {
+                console.log(result)
+                if(result.data.status == 'Authorized'){
+                    navigation.navigate('listAnak');
+                } else {
+                  getAlert("Login gagal", "Pastikan username dan password benar", "kembali")
+                }
+              }).catch((err) => {
+                getAlert("Login gagal", "Pastikan username dan password benar", "kembali")
+              });
+          } else {
+            getAlert("Login Gagal", "Pastikan username dan passsword telah terisi", "kembali")
+          }
+    }
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", () => {
             setIsKeyboardVisible(true);
@@ -34,9 +67,10 @@ export default function KaderScreen() {
                 ) : null
             }
             <Text style={styles.tName}>Nama Posyandu :</Text>
-            <TextInput style={styles.txtInput}/>
+            <TextInput style={styles.txtInput} onChangeText={setUsername} value={username}/>
+
             <Text style={styles.tPass}>Password :</Text>
-            <TextInput style={styles.txtPass} secureTextEntry={!passwordVisible}/>
+            <TextInput style={styles.txtPass} secureTextEntry={!passwordVisible} onChangeText={setPassword} value={password}/>
             <View style={styles.vCheckbox}>
                 <CheckBox
                 value={passwordVisible}
@@ -44,7 +78,7 @@ export default function KaderScreen() {
                 style={styles.checkbox}/>
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
-            <TouchableOpacity style={styles.btnLogin}>
+            <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
                 <Text style={styles.btnCap}>Login</Text>
             </TouchableOpacity>
         </View>

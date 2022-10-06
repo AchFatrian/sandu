@@ -37,7 +37,8 @@ export default function OrtuScreen() {
     if (childsNik != '') {
       axios.get(`https://sandu-api-production.up.railway.app/api/users/login/${Number(childsNik)}`)
         .then((result) => {
-          if(result.data.length() == 0 && result.data != null){
+          console.log(result)
+          if(result.data.length() != 0 && result.data != null){
             console.log(result)
             // navigation.navigate('ortu');
           } else {
