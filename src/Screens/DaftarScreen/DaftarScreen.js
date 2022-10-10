@@ -5,8 +5,7 @@ import { Text,
     Image, 
     TextInput, 
     TouchableOpacity, 
-    Keyboard,
-    Button } from 'react-native'
+    Keyboard, } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -20,7 +19,6 @@ export default function KaderScreen() {
     const [date, setDate] = useState(new Date(1598051730000));
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
-    const [country, setCountry] = useState('Unknown');
     const [radioButtons, setRadioButtons] = useState([
         {
             id: '0', // acts as primary key, should be unique and non-empty string

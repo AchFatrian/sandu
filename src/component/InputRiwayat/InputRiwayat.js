@@ -5,7 +5,7 @@ import Berat from '../../../assets/img/berat.png';
 import Umur from '../../../assets/img/umur.png';
 import Status from '../../../assets/img/status.png';
 import StatusTinggi from '../../../assets/img/sTinggi.png';
-import StatusBerat from '../../../assets/img/sBerat.png';
+import StatusBerat from '../../../assets/img/sBerat1.png';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -47,15 +47,6 @@ const InputRiwayat = ({ tanggal, tinggi, berat, umur, status}) =>{
                                 <Text style={styles.textCaption}>{umur}</Text>
                             </View>
                         </View>
-                        <View style={styles.vCapImg}>
-                            <View style={styles.vImg}>
-                                        <Text style={styles.txtCapImg}>Status Anak</Text> 
-                                        <Image source={Status} style={styles.image}/>
-                                    </View>
-                                    <View style={styles.vCap}>
-                                        <Text style={styles.textCaption}>{status}</Text>
-                                    </View>
-                        </View>
                     </View>
                     <View style={styles.vRows2}>
                         <View style={styles.vCapImgStatus}>
@@ -75,6 +66,15 @@ const InputRiwayat = ({ tanggal, tinggi, berat, umur, status}) =>{
                                 <View style={styles.vCap}>
                                     <Text style={styles.textCaption}>{berat}</Text>
                                 </View>
+                        </View>
+                        <View style={styles.vCapImg}>
+                            <View style={styles.vImg}>
+                                <Text style={styles.txtCapImg}>Status Anak</Text> 
+                                <Image source={Status} style={styles.image}/>
+                            </View>
+                            <View style={styles.vCap}>
+                                <Text style={styles.textCaption}>{status}</Text>
+                            </View>
                         </View>
                     </View>
                 </ScrollView>
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: windowHeight * 0.19,
         // borderWidth: 1,
-        justifyContent: 'flex-start',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         flexDirection: 'row',
         
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
         height: '85%',
         // borderWidth: 1,
         alignItems: 'center',
-        marginLeft: windowWidth * 0.032,
     },
 })
 

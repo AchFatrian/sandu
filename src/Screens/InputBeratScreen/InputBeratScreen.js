@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet,TouchableOpacity, Dimensions, Image } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet,TouchableOpacity, Dimensions, Image, TextInput, Keyboard } from 'react-native'
+import React, { useState, useEffect } from "react"
 import { useNavigation } from '@react-navigation/native';
 import Berat from '../../../assets/img/berat1.png';
 import Next from '../../../assets/img/next.png';
@@ -12,6 +12,15 @@ export default function InputBeratScreen() {
     const onNextPress = () => {
         navigation.navigate('tinggi');
     }
+    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", () => {
+            setIsKeyboardVisible(true);
+        })
+        Keyboard.addListener("keyboardDidHide", () => {
+            setIsKeyboardVisible(false);
+        })
+    }, [isKeyboarVisible])
   return (
     <View style={styles.container}>
       <View style={styles.control}>
@@ -23,10 +32,14 @@ export default function InputBeratScreen() {
             </View>
         </View>
         <View style={styles.containerInput}>
-            <Image source={Berat} style={styles.img}/>
-            <Text style={styles.txtCap}>Berat Badan</Text>
+            {
+                (!isKeyboarVisible) ? (
+                <Image source={Berat} style={styles.img}/>
+                ) : null
+            }
+            <Text style={styles.txtCap}>{'Berat Badan (Kg)'}</Text>
             <View style={styles.vInput}>
-                <Text style={styles.tCap}>20 Kg</Text>
+                <TextInput style={styles.tCap}/>
             </View>
             <TouchableOpacity style={styles.tBtn} onPress={onNextPress}>
                 <Image source={Next} style={styles.imgNext}/>
@@ -98,8 +111,8 @@ const styles = StyleSheet.create({
     },
 
     img:{
-        width: windowWidth * 0.4,
-        height: windowHeight * 0.25,
+        width: windowWidth * 0.5,
+        height: windowHeight * 0.27,
         marginTop: windowHeight * 0.04,
     },
 
@@ -129,12 +142,14 @@ const styles = StyleSheet.create({
     },
 
     tBtn:{
-        marginTop: windowHeight * 0.06,
-        marginLeft: windowWidth * 0.5,
+        marginTop: windowHeight * 0.03,
+        marginLeft: windowWidth * 0.6,
+        width: windowWidth * 0.2,
+        height: windowHeight * 0.08
     },
 
     imgNext:{
-        width: windowWidth * 0.1,
-        height: windowHeight * 0.06
+        width: windowWidth * 0.132,
+        height: windowHeight * 0.07
     },
 })

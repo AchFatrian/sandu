@@ -40,7 +40,7 @@ export default function MenuScreen() {
             <Image source={Lihat} style={styles.iLihat}/>
         </TouchableOpacity>
         <TouchableOpacity style={styles.tBtn} onPress={onInputPress}>
-            <Text style={styles.txtCap}>Input Data</Text>
+            <Text style={styles.txtCap}>Masukan Data</Text>
             <Image source={Input} style={styles.iInput}/>
         </TouchableOpacity>
       </View>
@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         flexDirection: 'row',
         backgroundColor: 'white',
-        elevation: 10,
     },
 
     leftColor:{

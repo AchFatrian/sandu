@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet,TouchableOpacity, Dimensions, Image } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet,TouchableOpacity, Dimensions, Image, Keyboard, TextInput } from 'react-native'
+import React, { useState, useEffect } from "react"
 import { useNavigation } from '@react-navigation/native';
 import Tinggi from '../../../assets/img/tinggi1.png';
 import Next from '../../../assets/img/next.png';
@@ -18,6 +18,15 @@ export default function InputTinggiScreen() {
     const onNextPress = () => {
         navigation.navigate('preview');
     }
+    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", () => {
+            setIsKeyboardVisible(true);
+        })
+        Keyboard.addListener("keyboardDidHide", () => {
+            setIsKeyboardVisible(false);
+        })
+    }, [isKeyboarVisible])
   return (
     <View style={styles.container}>
       <View style={styles.control}>
@@ -29,10 +38,14 @@ export default function InputTinggiScreen() {
             </View>
         </View>
         <View style={styles.containerInput}>
-            <Image source={Tinggi} style={styles.img}/>
-            <Text style={styles.txtCap}>Tinggi Badan</Text>
+            {
+                (!isKeyboarVisible) ? (
+                <Image source={Tinggi} style={styles.img}/>
+                ) : null
+            }
+            <Text style={styles.txtCap}>{'Tinggi Badan (Cm)'}</Text>
             <View style={styles.vInput}>
-                <Text style={styles.tCap}>100 Cm</Text>
+                <TextInput style={styles.tCap}/>
             </View>
             <View style={styles.vBtn}>
                 <TouchableOpacity style={styles.tBtnPrev} onPress={onPrevPress}>
@@ -109,8 +122,8 @@ const styles = StyleSheet.create({
     },
 
     img:{
-        width: windowWidth * 0.4,
-        height: windowHeight * 0.25,
+        width: windowWidth * 0.5,
+        height: windowHeight * 0.27,
         marginTop: windowHeight * 0.04,
     },
 
@@ -145,18 +158,18 @@ const styles = StyleSheet.create({
     },
 
     tBtnPrev:{
-        marginTop: windowHeight * 0.06,
-        marginLeft: windowWidth * 0.12,
+        marginTop: windowHeight * 0.04,
+        marginLeft: windowWidth * 0.085,
     },
 
     tBtnNext:{
-        marginTop: windowHeight * 0.06,
+        marginTop: windowHeight * 0.04,
         marginLeft: windowWidth * 0.363,
     },
 
     imgNav:{
-        width: windowWidth * 0.1,
-        height: windowHeight * 0.06
+        width: windowWidth * 0.132,
+        height: windowHeight * 0.07
     },
 
 })
