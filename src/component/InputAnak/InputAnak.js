@@ -1,5 +1,6 @@
 import { Text, View, TouchableOpacity,StyleSheet, Dimensions, Image} from 'react-native';
 import React, { Component } from 'react';
+import Hapus from '../../../assets/img/delete1.png';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -11,7 +12,12 @@ const InputAnak = ({ onPress, nama, nik}) =>{
            <View style={styles.leftColor}></View>
            <View style={styles.vCaption}>
                 <Text style={styles.txtNama}>{nama}</Text>
-                <Text style={styles.txtNik}>{nik}</Text>
+                <View style={styles.vNikDel}>
+                    <Text style={styles.txtNik}>{nik}</Text>
+                    <TouchableOpacity style={styles.tImg}>
+                        <Image source={Hapus} style={styles.img}/>
+                    </TouchableOpacity>
+                </View>
            </View>
        </TouchableOpacity>
     )
@@ -54,6 +60,23 @@ const styles = StyleSheet.create({
         marginTop: windowHeight * 0.01,
         color:'#4397AF',
         fontWeight:'400',
+    },
+
+    vNikDel:{
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    tImg:{
+        marginLeft: windowWidth * 0.34,
+        width: windowWidth * 0.09,
+        alignItems: 'center',
+    },
+
+
+    img:{
+        width: windowWidth * 0.075,
+        height: windowHeight * 0.04,
     },
     
 })
