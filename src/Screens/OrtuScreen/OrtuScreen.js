@@ -34,13 +34,12 @@ export default function OrtuScreen() {
   }
 
   const login = async () => {
+    // navigation.navigate('riwayat');
     if (childsNik != '') {
       axios.get(`https://sandu-api-production.up.railway.app/api/users/login/${Number(childsNik)}`)
         .then((result) => {
-          console.log(result)
-          if(result.data.length() != 0 && result.data != null){
-            console.log(result)
-            // navigation.navigate('ortu');
+          if(result.data.length != 0 && result.data != null){
+            navigation.navigate('riwayatAnak', result.data[0]._id);
           } else {
             getAlert("Login gagal", "Pastikan NIK benar dan telah terdaftar", "kembali")
           }
@@ -52,6 +51,11 @@ export default function OrtuScreen() {
     }
   }
 
+
+  const onLoginPress = () => {
+    navigation.navigate('riwayat');
+  }
+  
   useEffect(() => {
       Keyboard.addListener("keyboardDidShow", () => {
           setIsKeyboardVisible(true);
@@ -118,6 +122,8 @@ const styles = StyleSheet.create({
       backgroundColor: '#4397af33',
       borderRadius: 8,
       marginBottom: windowHeight * 0.007,
+      borderColor: '#4397AF',
+      borderWidth: 1,
   },
 
   btnLogin:{

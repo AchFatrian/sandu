@@ -33,6 +33,7 @@ export default function KaderScreen() {
       }
 
     const onLoginPress = () => {
+        // navigation.navigate('listAnak');
         if (username != '' && password != '') {
             axios.post(`https://sandu-api-production.up.railway.app/api/kader/login`, {username, password})
               .then((result) => {
@@ -79,7 +80,7 @@ export default function KaderScreen() {
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
             <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
-                <Text style={styles.btnCap}>Login</Text>
+                <Text style={styles.btnCap}>Masuk</Text>
             </TouchableOpacity>
         </View>
   )
@@ -118,6 +119,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#4397af33',
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     tPass: {
@@ -133,6 +136,8 @@ const styles = StyleSheet.create({
         height: windowHeight * 0.06,
         backgroundColor: '#4397af33',
         borderRadius: 8,
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     vCheckbox: { 

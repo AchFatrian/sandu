@@ -13,8 +13,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 
-// const axios = require('axios')
+const axios = require('axios')
 import {Picker} from '@react-native-picker/picker';
+import RadioGroup from 'react-native-radio-buttons-group';
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -22,7 +24,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function KaderScreen() {
     const navigation = useNavigation('');
 
-    const [date, setDate] = useState(new Date(1598051730000));
+    const [date, setDate] = useState(new Date(1193051730000));
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     
@@ -31,12 +33,30 @@ export default function KaderScreen() {
     const [phoneNum, setPhoneNum] = useState('')
     const [childsName, setChildName] = useState('')
     const [childsNik, setChildNik] = useState('')
-    // const [birthDate, setBirthDate] = useState('')
+    const [birthDate, setBirthDate] = useState(1193051730000)
+    
+    const [radioButtons, setRadioButtons] = useState([
+        {
+            id: '0', // acts as primary key, should be unique and non-empty string
+            label: 'Laki-laki',
+            value: 'laki',
+            borderColor: '#4397AF',
+            color:'#4397AF'
+        },
+        {
+            id: '1',
+            label: 'Perempuan',
+            value: 'perempuan',
+            borderColor: '#4397AF',
+            color:'#4397AF'
+        }
+    ]);
    
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate;
       setShow(false);
       setDate(currentDate);
+      setBirthDate(new Date(new Date(currentDate).getFullYear(), new Date(currentDate).getMonth()-1, new Date(currentDate).getDate()).getTime())
     };
   
     const showMode = (currentMode) => {
@@ -60,30 +80,35 @@ export default function KaderScreen() {
       }
 
     const register = async () => {
-        if(parentsName != '' && phoneNum != '' &&  childsName != '' && childsNik != ''){
+        if(parentsName != '' && phoneNum != '' &&  childsName != '' && childsNik != '' && birthDate != 1193051730000){
             const regisData = {
                 childs_name: childsName,
-                childs_birth: 29839238, // tambahan
                 parents_name: parentsName,
-                parents_phone: phoneNum, // tambahan
-                childs_nik: childsNik,
-                childs_birth: date
+                parents_phone: phoneNum, 
+                childs_nik: Number(childsNik),
+                childs_birth: birthDate,
+                childs_gender: radioButtons.find(x => x.selected === true).value
             }
 
-            // console.log(regisData)
-            //axios
-            axios.post(`https://sandu-api-production.up.railway.app/api/users`, regisData)
-            .then((result) => {
-                // console.log(result)
-                if(result.status == 'Authorized'){
-                    navigation.navigate('ortu');
-                }
-                else {
-                    getAlert("Pendaftaran gagal", "Pastikan data telah terisi dengan benar", "kembali")
-                }
-            }).catch((err) => {
-                console.log(err)
-            });
+            console.log(regisData)
+
+            const checkNik = await axios.get(`https://sandu-api-production.up.railway.app/api/users/login/${childsNik}`)
+
+            if (checkNik.data.length != 0){
+                getAlert("Pendaftaran Gagal", "NIK telah terdaftar, silahkan hubungi kader", "kembali")
+            } else {
+                axios.post(`https://sandu-api-production.up.railway.app/api/users`, regisData)
+                .then((result) => {
+                    if(result.data.status == 'success'){
+                        navigation.navigate('ortu');
+                    }
+                    else {
+                        getAlert("Pendaftaran gagal", "Pastikan data telah terisi dengan benar", "kembali")
+                    }
+                }).catch((err) => {
+                    getAlert("Pendaftaran gagal", `Terjadi Error (${err.message})`, "kembali")
+                });
+            }
 
         } else {
             getAlert("Pendaftaran Gagal", "Pastikan Semua Data Telah Terisi", "kembali")
@@ -98,6 +123,11 @@ export default function KaderScreen() {
             setIsKeyboardVisible(false);
         })
     }, [isKeyboarVisible])
+
+    function onPressRadioButton(radioButtonsArray) {
+        setRadioButtons(radioButtonsArray);
+        console.log(radioButtons.find(x => x.selected === true).value)
+    }
 
   return (
         <View style={styles.container}>
@@ -131,7 +161,14 @@ export default function KaderScreen() {
                         />
                     )}
             </TouchableOpacity>
-
+            <Text style={styles.tGender}>Jenis Kelamin Anak :</Text>
+            <View style={styles.vGender}>
+                <RadioGroup 
+                    radioButtons={radioButtons} 
+                    onPress={onPressRadioButton} 
+                    layout='row'
+                />
+            </View>
             <TouchableOpacity style={styles.btnLogin} onPress={()=>register()}>
                 <Text style={styles.btnCap}>Daftar</Text>
             </TouchableOpacity>
@@ -192,17 +229,27 @@ const styles = StyleSheet.create({
         marginBottom: windowHeight * 0.007,
     },
 
+    tGender: {
+        fontSize: windowWidth * 0.04,
+        fontWeight: '600',
+        color: 'black',
+        marginRight: windowWidth * 0.32,
+        marginBottom: windowHeight * 0.007,
+    },
+
     txtInput: {
         width: windowWidth * 0.7,
         height: windowHeight * 0.052,
         backgroundColor: '#4397af33',
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.04,
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     btnLogin:{
-        marginTop: windowHeight *0.03,
+        marginTop: windowHeight *0.01,
         width: windowWidth * 0.35,
         height: windowHeight * 0.05,
         backgroundColor: '#4397AF',
@@ -223,6 +270,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
         justifyContent: 'center',
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     txtTanggal:{
@@ -238,12 +287,10 @@ const styles = StyleSheet.create({
         marginBottom: windowHeight * 0.007,
     },
 
-    picker: {
+    vGender:{
         width: windowWidth * 0.7,
-        height: windowHeight * 0.01,
-        backgroundColor: '#4397af33',
-        borderRadius: 8,
-        marginBottom: windowHeight * 0.007,
-        fontSize: windowWidth * 0.045,
-      },
+        height: windowHeight * 0.052,
+        // backgroundColor: '#4397af33',
+        // flexDirection: 'row',
+    }
 })

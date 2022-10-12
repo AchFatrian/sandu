@@ -1,52 +1,77 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native'
-import React from 'react'
+import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native'
+import React, { useEffect, useState, useCallback } from 'react'
 import InputAnak from '../../component/InputAnak/InputAnak'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+
+const axios = require('axios')
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function ListAnakScreen() {
+    const [users, setUsers] = useState([])
+    
     const navigation = useNavigation('');
-        const onInputPress = () => {
-        navigation.navigate('input');
-        }
+    const onMenuPress = (user) => {
+        EncryptedStorage.setItem(
+            "selected_user",
+            JSON.stringify(user)
+        ).then((result) => {
+            console.log(result)
+            navigation.navigate('menu');
+        }).catch((err) => {
+            getAlert("Error", `Terjadi Kesalahan Saat Mendapatkan Data. ( ${err.message} )`, "kembali")
+        });
+    }
+
+    const getAlert = (title, message, button) => {
+        return(
+          Alert.alert(
+            title, message,
+            [{ text: button }]
+          )
+        )
+      }
+
+    const getUsers = async () => {
+        axios.get(`https://sandu-api-production.up.railway.app/api/users`)
+        .then((result) => {
+            // console.log(result.data)
+            setUsers(result.data)
+        }).catch((err) => {
+          getAlert("Error", "Terjadi Kesalahan Saat Menampilkan Data", "kembali")
+        });
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+          getUsers()
+        }, [])
+    )
+    
   return (
     <View style={styles.container}>
         <View style={styles.controlScroll}>
             <View style={styles.vTittle}>
                 <Text style={styles.txtTittle}>List Data Anak</Text>
             </View>
+            
             <ScrollView style={styles.scrollContainer}>
-                <InputAnak
-                    onPress={onInputPress}
-                    nama={'Cahyo Arrisabarno'}
-                    tinggi={'60 CM'}
-                    berat={'18 Kg'}
-                    umur={26}
-                    status={'Sehat'}/>
-                <InputAnak
-                    onPress={onInputPress}
-                    nama={'Achmad Fatrian'}
-                    tinggi={'40 CM'}
-                    berat={'14 Kg'}
-                    umur={26}
-                    status={'Sehat'}/>
-                <InputAnak
-                    onPress={onInputPress}
-                    nama={'M Imam Wahyuda'}
-                    tinggi={'30 CM'}
-                    berat={'10 Kg'}
-                    umur={36}
-                    status={'Sakit'}/>
-                <InputAnak
-                    onPress={onInputPress}
-                    nama={'Jasmine Azzahra'}
-                    tinggi={'60 CM'}
-                    berat={'18 Kg'}
-                    umur={26}
-                    status={'Sehat'}/>
+                { users.map((prop, key) => {
+                    return(
+                        <InputAnak
+                            onPress={()=>onMenuPress(prop)}
+                            nama={prop.childs_name}
+                            nik={prop.childs_nik}
+                            key={key}
+                        />
+                    )
+                })}
             </ScrollView>
+            <TouchableOpacity style={styles.btnLogOut}>
+                <Text style={styles.btnCap}>Keluar</Text>
+            </TouchableOpacity>
         </View>
     </View>
   )
@@ -77,9 +102,26 @@ const styles = StyleSheet.create({
         width: '92%',
         backgroundColor: '#4397af33',
         borderRadius: 20,
+        alignItems: 'center',
     },
 
     scrollContainer: {
         flex: 1, 
     },
+
+    btnLogOut:{
+        marginTop: windowHeight *0.03,
+        width: windowWidth * 0.35,
+        height: windowHeight * 0.05,
+        backgroundColor: '#4397AF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius:29,
+        marginBottom: windowHeight * 0.05,
+    },
+
+    btnCap:{
+        fontSize: windowWidth *0.055,
+        color: 'white',
+    }
 })
