@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
         width: windowWidth * 0.5,
         height: windowHeight * 0.27,
         marginTop: windowHeight * 0.04,
+        resizeMode: 'contain',
     },
 
     txtCap:{
@@ -149,7 +150,8 @@ const styles = StyleSheet.create({
     },
 
     imgNext:{
-        width: windowWidth * 0.132,
-        height: windowHeight * 0.07
+        width: windowWidth * 0.135,
+        height: windowHeight * 0.07,
+        resizeMode: 'contain',
     },
 })
