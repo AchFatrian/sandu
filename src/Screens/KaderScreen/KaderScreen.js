@@ -5,36 +5,73 @@ import { Text,
     Image, 
     TextInput, 
     TouchableOpacity, 
-    KeyboardAvoidingView, 
-    Keyboard,
-    TouchableWithoutFeedback } from 'react-native'
+    Keyboard, Alert} from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto4.png'
+import { useNavigation } from '@react-navigation/native';
 
+const axios = require('axios')
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function KaderScreen() {
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isKeyboarVisible, setIsKeyboardVisible] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const navigation = useNavigation('');
+
+    const getAlert = (title, message, button) => {
+        return(
+          Alert.alert(
+            title, message,
+            [{ text: button }]
+          )
+        )
+      }
+
+    const onLoginPress = () => {
+        // navigation.navigate('listAnak');
+        if (username != '' && password != '') {
+            axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/kader/login`, {username, password})
+              .then((result) => {
+                console.log(result)
+                if(result.data.status == 'Authorized'){
+                    navigation.navigate('listAnak');
+                } else {
+                  getAlert("Login gagal", "Pastikan username dan password benar", "kembali")
+                }
+              }).catch((err) => {
+                getAlert("Login gagal", "Pastikan username dan password benar", "kembali")
+              });
+          } else {
+            getAlert("Login Gagal", "Pastikan username dan passsword telah terisi", "kembali")
+          }
+    }
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", () => {
+            setIsKeyboardVisible(true);
+        })
+        Keyboard.addListener("keyboardDidHide", () => {
+            setIsKeyboardVisible(false);
+        })
+    }, [isKeyboarVisible])
+
   return (
-        <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.title}>KADER</Text>
-            <Image
-            source={Logo}
-            style={styles.logo}/>
-            <Text style={styles.tName}>Nama Posyandu:</Text>
-            <TouchableWithoutFeedback>
-                <TextInput
-                style={styles.txtInput}
-                onPress={Keyboard.dismiss}/>
-            </TouchableWithoutFeedback>
-            <Text style={styles.tPass}>Password:</Text>
-            <TextInput
-            style={styles.txtPass}
-            secureTextEntry={!passwordVisible}/>
+            {
+                (!isKeyboarVisible) ? (
+                    <Image source={Logo} style={styles.logo}/>
+                ) : null
+            }
+            <Text style={styles.tName}>Nama Posyandu :</Text>
+            <TextInput style={styles.txtInput} onChangeText={setUsername} value={username}/>
+
+            <Text style={styles.tPass}>Password :</Text>
+            <TextInput style={styles.txtPass} secureTextEntry={!passwordVisible} onChangeText={setPassword} value={password}/>
             <View style={styles.vCheckbox}>
                 <CheckBox
                 value={passwordVisible}
@@ -42,12 +79,10 @@ export default function KaderScreen() {
                 style={styles.checkbox}/>
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
-            <TouchableOpacity style={styles.btnLogin}>
-                <Text style={styles.btnCap}>Login</Text>
+            <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
+                <Text style={styles.btnCap}>Masuk</Text>
             </TouchableOpacity>
-        </KeyboardAvoidingView>
-        
-     
+        </View>
   )
 }
 
@@ -84,6 +119,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#4397af33',
         borderRadius: 8,
         marginBottom: windowHeight * 0.007,
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     tPass: {
@@ -99,6 +136,8 @@ const styles = StyleSheet.create({
         height: windowHeight * 0.06,
         backgroundColor: '#4397af33',
         borderRadius: 8,
+        borderColor: '#4397AF',
+        borderWidth: 1,
     },
 
     vCheckbox: { 
@@ -125,5 +164,6 @@ const styles = StyleSheet.create({
     btnCap:{
         fontSize: windowWidth *0.055,
         color: 'white',
-    }
+    },
+
 })
