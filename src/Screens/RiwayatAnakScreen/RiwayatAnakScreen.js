@@ -11,6 +11,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function RiwayatAnakScreen({route}) {
     const [data, setData] = useState([])
     const [birthDate, setBirthDate] = useState(null)
+    const [name, setName] = useState('')
 
     const getAlert = (title, message, button) => {
         return(
@@ -22,19 +23,30 @@ export default function RiwayatAnakScreen({route}) {
       }
     
     const getUserData = async (id) => {
-        axios.get(`https://sandu-api-production.up.railway.app/api/users/id/${id}`)
+        axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users/id/${id}`)
         .then((result) => {
             // console.log(result.data[0])
             setData(result.data[0].data)
             setBirthDate(result.data[0].childs_birth)
+            setName(result.data[0].childs_name)
         }).catch((err) => {
           getAlert("Error", "Terjadi Kesalahan Saat Menampilkan Data", "kembali")
         });
     }
 
+    const deleteData = async (user_id, data_id) => {
+      console.log(user_id, data_id)
+      axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/users/data/delete`,{ user_id, data_id })
+      .then((result) => {
+          getUserData(route.params.id)
+      }).catch((err) => {
+        getAlert("Error", "Terjadi Kesalahan Menghapus Data", "kembali")
+      });
+    }
+
     useFocusEffect(
         useCallback(() => {
-          getUserData(route.params)
+          getUserData(route.params.id)
         }, [])
     )
 
@@ -46,9 +58,15 @@ export default function RiwayatAnakScreen({route}) {
         </View>
         <ScrollView style={styles.scrollContainer}>
             { data.map((prop, key) => {
-                console.log(data)
                 return(
-                    <Riwayat data={prop} birthDate={birthDate} key={key}/>
+                    <Riwayat 
+                      data={prop} 
+                      birthDate={birthDate} 
+                      key={key} 
+                      name={name}
+                      del={()=>deleteData(route.params.id, prop._id)}
+                      status={route.params.state}
+                    />
                 )
             })}
         </ScrollView>

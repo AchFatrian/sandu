@@ -4,6 +4,7 @@ import Back from '../../../assets/img/back.png'
 import Input from '../../../assets/img/input.png'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import axios from 'axios';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -34,6 +35,42 @@ export default function PreviewScreen({route}) {
         });
     }
 
+    const sendData = async () => {
+        const dateNow = new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate()).getTime()
+        const dataStatus = {
+            "gender": user.childs_gender == 'laki' ? 1 : user.childs_gender == 'perempuan' ? 0 : null,
+            "umur": Math.round((((dateNow - user.childs_birth)/2678400000) + Number.EPSILON) * 10)/10,
+            "tb": Number(route.params.height),
+            "bb": Number(route.params.weight)
+        }
+
+        // console.log(data)
+        axios.post('http://cahyo.pythonanywhere.com/get_status', dataStatus)
+        .then((result) => {
+            const data = {
+                user_id: user._id,
+                weight: Number(route.params.weight),
+                height: Number(route.params.height),
+                status_h: result.data.status.tb,
+                status_w: result.data.status.bb,
+                status_a: result.data.status.gz
+            }
+            console.log(data)
+            axios.post('https://harlequin-bullfrog-tie.cyclic.app/api/users/data', data)
+            .then((result) => {
+                console.log(result.data)
+                navigation.navigate('listAnak');
+            }).catch((err) => {
+                getAlert("Error", `Terjadi Kesalahan Saat Menyimpan Data, ( ${err.message} )`, "kembali")
+            });           
+        }).catch((err) => {
+            getAlert("Error", `Terjadi Kesalahan Saat Menyimpan Data, ( ${err.message} )`, "kembali")
+        });
+
+        // console.log(getStatus.data.status)
+
+    }
+
     useFocusEffect(
         useCallback(() => {
           getUsers()
@@ -62,7 +99,7 @@ export default function PreviewScreen({route}) {
         <View style={styles.vInput}>
             <Text style={styles.tCap}>{route.params.weight} Kg</Text>
         </View>
-        <TouchableOpacity style={styles.btnSave}>
+        <TouchableOpacity style={styles.btnSave} onPress={()=>sendData()}>
                 <Text style={styles.btnCap}>Simpan</Text>
         </TouchableOpacity>
       </View>

@@ -1,24 +1,39 @@
-import { Text, View, TouchableOpacity,StyleSheet, Dimensions, Image, ScrollView} from 'react-native';
+import { Text, View, TouchableOpacity,StyleSheet, Dimensions, Image, ScrollView, Alert} from 'react-native';
 import React, { Component } from 'react';
 import Tinggi from '../../../assets/img/tinggi.png';
 import Berat from '../../../assets/img/berat.png';
 import Umur from '../../../assets/img/umur.png';
 import Status from '../../../assets/img/status.png';
 import StatusTinggi from '../../../assets/img/sTinggi.png';
-import StatusBerat from '../../../assets/img/sBerat.png';
-
+import StatusBerat from '../../../assets/img/sBerat1.png';
+import Hapus from '../../../assets/img/delete1.png';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const dateNow = new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate()).getTime()
 
-const InputRiwayat = ({data, birthDate}) =>{
+const InputRiwayat = ({data, birthDate, name, del, status}) =>{
+    console.log(data)
     return(
         <View style={styles.container} >
            <View style={styles.leftColor}></View>
            <View style={styles.vCaption}>
-                <Text style={styles.txtTanggal}>{data.createdAt.slice(0, -14) || "tanggal"}</Text>
-                {/* <Text style={styles.txtTanggal}>{Date.now(data.createdAt)}</Text> */}
+                <View style={styles.vDel}>
+                    <Text style={styles.txtTanggal}>{`${data.date}-${data.month}-${data.year}`}</Text>
+                    <TouchableOpacity style={[styles.tImg, {display:`${status == 'kader' ? 'flex' : 'none'}`}]}
+                        onPress={() => Alert.alert(
+                                'Peringatan',
+                                `Apakah anda yakin akan menghapus data dari ${name} pada tanggal ${data.date}-${data.month}-${data.year}`,
+                            [
+                                { text: 'Tidak' },
+                                { text: 'Iya', onPress:()=>del() },
+                            ],
+                            { cancelable: true }
+                        )}
+                      >
+                        <Image source={Hapus} style={styles.img}/>
+                    </TouchableOpacity>
+                </View>
                 <ScrollView style={styles.controlScroll}>
                     <View style={styles.vRows}>
                         <View style={styles.vCapImg}>
@@ -45,16 +60,7 @@ const InputRiwayat = ({data, birthDate}) =>{
                                 <Image source={Umur} style={styles.image}/>
                             </View>
                             <View style={styles.vCap}>
-                                <Text style={styles.textCaption}>{Math.round((((dateNow - birthDate)/2678400000) + Number.EPSILON) * 10) || 0} bln</Text>
-                            </View>
-                        </View>
-                        <View style={styles.vCapImg}>
-                            <View style={styles.vImg}>
-                                <Text style={styles.txtCapImg}>Status Anak</Text> 
-                                <Image source={Status} style={styles.image}/>
-                            </View>
-                            <View style={styles.vCap}>
-                                <Text style={styles.textCaption}>{data.status_a || "status"}</Text>
+                                <Text style={styles.textCaption}>{Math.round((((dateNow - birthDate)/2678400000) + Number.EPSILON) * 10)/10 || 0} bln</Text>
                             </View>
                         </View>
                     </View>
@@ -75,6 +81,15 @@ const InputRiwayat = ({data, birthDate}) =>{
                             </View>
                             <View style={styles.vCap}>
                                 <Text style={styles.textCaption}>{data.status_w || "status"}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.vCapImg}>
+                            <View style={styles.vImg}>
+                                <Text style={styles.txtCapImg}>Status Anak</Text> 
+                                <Image source={Status} style={styles.image}/>
+                            </View>
+                            <View style={styles.vCap}>
+                                <Text style={styles.textCaption}>{data.status_a || "status"}</Text>
                             </View>
                         </View>
                     </View>
@@ -132,7 +147,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: windowHeight * 0.19,
         // borderWidth: 1,
-        justifyContent: 'flex-start',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         flexDirection: 'row',
         
@@ -152,6 +167,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 6,
+    },
+
+    vDel:{
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    tImg:{
+        marginLeft: 'auto',
+        width: windowWidth * 0.1,
+        alignItems: 'center',
+        marginTop: windowHeight * 0.015,
+    },
+
+    img:{
+        width: windowWidth * 0.072,
+        height: windowHeight * 0.036,
     },
 
     txtCapImg:{
@@ -186,7 +218,6 @@ const styles = StyleSheet.create({
         height: '85%',
         // borderWidth: 1,
         alignItems: 'center',
-        marginLeft: windowWidth * 0.032,
     },
 })
 

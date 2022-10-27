@@ -92,12 +92,12 @@ export default function KaderScreen() {
 
             console.log(regisData)
 
-            const checkNik = await axios.get(`https://sandu-api-production.up.railway.app/api/users/login/${childsNik}`)
+            const checkNik = await axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users/login/${childsNik}`)
 
             if (checkNik.data.length != 0){
                 getAlert("Pendaftaran Gagal", "NIK telah terdaftar, silahkan hubungi kader", "kembali")
             } else {
-                axios.post(`https://sandu-api-production.up.railway.app/api/users`, regisData)
+                axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/users`, regisData)
                 .then((result) => {
                     if(result.data.status == 'success'){
                         navigation.navigate('ortu');

@@ -35,7 +35,7 @@ export default function KaderScreen() {
     const onLoginPress = () => {
         // navigation.navigate('listAnak');
         if (username != '' && password != '') {
-            axios.post(`https://sandu-api-production.up.railway.app/api/kader/login`, {username, password})
+            axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/kader/login`, {username, password})
               .then((result) => {
                 console.log(result)
                 if(result.data.status == 'Authorized'){

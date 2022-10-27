@@ -35,12 +35,22 @@ export default function ListAnakScreen() {
       }
 
     const getUsers = async () => {
-        axios.get(`https://sandu-api-production.up.railway.app/api/users`)
+        axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users`)
         .then((result) => {
             // console.log(result.data)
             setUsers(result.data)
         }).catch((err) => {
           getAlert("Error", "Terjadi Kesalahan Saat Menampilkan Data", "kembali")
+        });
+    }
+
+    const deleteUser = async (id) => {
+        console.log(id)
+        axios.delete(`https://harlequin-bullfrog-tie.cyclic.app/api/users`,{ data: {user_id: id} })
+        .then((result) => {
+            getUsers()
+        }).catch((err) => {
+          getAlert("Error", "Terjadi Kesalahan Menghapus Data", "kembali")
         });
     }
 
@@ -64,7 +74,9 @@ export default function ListAnakScreen() {
                             onPress={()=>onMenuPress(prop)}
                             nama={prop.childs_name}
                             nik={prop.childs_nik}
+                            id={prop._id}
                             key={key}
+                            del={()=>deleteUser(prop._id)}
                         />
                     )
                 })}

@@ -36,10 +36,10 @@ export default function OrtuScreen() {
   const login = async () => {
     // navigation.navigate('riwayat');
     if (childsNik != '') {
-      axios.get(`https://sandu-api-production.up.railway.app/api/users/login/${Number(childsNik)}`)
+      axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users/login/${Number(childsNik)}`)
         .then((result) => {
           if(result.data.length != 0 && result.data != null){
-            navigation.navigate('riwayatAnak', result.data[0]._id);
+            navigation.navigate('riwayatAnak', {id: result.data[0]._id, state: 'user'});
           } else {
             getAlert("Login gagal", "Pastikan NIK benar dan telah terdaftar", "kembali")
           }
@@ -52,9 +52,9 @@ export default function OrtuScreen() {
   }
 
 
-  const onLoginPress = () => {
-    navigation.navigate('riwayat');
-  }
+  // const onLoginPress = () => {
+  //   navigation.navigate('riwayat');
+  // }
   
   useEffect(() => {
       Keyboard.addListener("keyboardDidShow", () => {

@@ -179,8 +179,8 @@ const styles = StyleSheet.create({
     },
 
     img:{
-        width: windowWidth * 0.4,
-        height: windowHeight * 0.25,
+        width: windowWidth * 0.5,
+        height: windowHeight * 0.27,
         marginTop: windowHeight * 0.04,
     },
 
@@ -210,12 +210,14 @@ const styles = StyleSheet.create({
     },
 
     tBtn:{
-        marginTop: windowHeight * 0.06,
-        marginLeft: windowWidth * 0.5,
+        marginTop: windowHeight * 0.03,
+        marginLeft: windowWidth * 0.6,
+        width: windowWidth * 0.2,
+        height: windowHeight * 0.08
     },
 
     imgNext:{
-        width: windowWidth * 0.1,
-        height: windowHeight * 0.06
+        width: windowWidth * 0.132,
+        height: windowHeight * 0.07
     },
 })
