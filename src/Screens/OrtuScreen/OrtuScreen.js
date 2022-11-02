@@ -1,14 +1,9 @@
-import { Text, 
-  View,
-  StyleSheet, 
-  Dimensions, 
-  Image, 
-  TextInput, 
-  TouchableOpacity, 
-  Keyboard, Alert } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, Image, TextInput, 
+  TouchableOpacity, Keyboard, Alert } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto5.png'
 import { useNavigation } from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 const axios = require('axios')
 const windowWidth = Dimensions.get('window').width;
@@ -33,13 +28,22 @@ export default function OrtuScreen() {
     )
   }
 
+  const saveAuth = async (userData) => {
+    EncryptedStorage.setItem("user", JSON.stringify({role: 'ortu', data: userData}))
+    .then((result) => {
+      navigation.navigate('riwayatAnak', {id: userData._id, state: 'user'});
+    }).catch((err) => {
+        getAlert("Error", `Terjadi Kesalahan Saat Menyimpan sesi. ( ${err.message} )`, "kembali")
+    });
+  }
+
   const login = async () => {
     // navigation.navigate('riwayat');
     if (childsNik != '') {
       axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users/login/${Number(childsNik)}`)
         .then((result) => {
           if(result.data.length != 0 && result.data != null){
-            navigation.navigate('riwayatAnak', {id: result.data[0]._id, state: 'user'});
+            saveAuth(result.data[0])
           } else {
             getAlert("Login gagal", "Pastikan NIK benar dan telah terdaftar", "kembali")
           }

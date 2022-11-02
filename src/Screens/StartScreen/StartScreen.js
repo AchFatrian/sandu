@@ -3,47 +3,54 @@ import React, { Component } from 'react'
 import Logo from '../../../assets/img/foto1.png'
 import LogoOrtu from '../../../assets/img/foto2.png'
 import LogoKader from '../../../assets/img/foto3.png'
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default class StartScreen extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
+export default function StartScreen() {
+  const navigation = useNavigation('');
+
+  const onKader = async () => {
+    const user = await JSON.parse(await EncryptedStorage.getItem("user"))
+    if(user){
+      user.role=='kader' ? navigation.navigate('listAnak') : navigation.navigate('kader') 
+    } else {
+      navigation.navigate('kader')
+    }
   }
-  
-  render() {
-    return (
-      <View style= {styles.root}>
-        <Image
-        source={Logo}
-        style={styles.logo}/>
-        <TouchableOpacity style={styles.btnOrtu}
-         onPress={()=>this.props.navigation.navigate('ortu')}>
-            <View style={styles.vLogoBtn}>
-              <Image
-              source={LogoOrtu}
-              style={styles.logoBtn}/>
-            </View>
-            <View style={styles.vCapBtn}>
-              <Text style={styles.textBtn}>Orang Tua</Text>
-            </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnKader}
-          onPress={()=>this.props.navigation.navigate('kader')}>
-            <View style={styles.vLogoBtn}>
-              <Image
-              source={LogoKader}
-              style={styles.logoBtn}/>
-            </View>
-            <View style={styles.vCapBtn}>
-              <Text style={styles.textBtn}>Kader</Text>
-            </View>
-        </TouchableOpacity>
-      </View>
-    )
+
+  const onOrtu = async () => {
+    const user = await JSON.parse(await EncryptedStorage.getItem("user"))
+    if(user){
+      user.role=='ortu' ? navigation.navigate('riwayatAnak', {id: user.data._id, state: 'user'}) : navigation.navigate('ortu') 
+    } else {
+      navigation.navigate('ortu')
+    }
   }
+
+  return (
+    <View style= {styles.root}>
+      <Image source={Logo} style={styles.logo}/>
+      <TouchableOpacity style={styles.btnOrtu} onPress={()=>{onOrtu()}}>
+          <View style={styles.vLogoBtn}>
+            <Image source={LogoOrtu} style={styles.logoBtn}/>
+          </View>
+          <View style={styles.vCapBtn}>
+            <Text style={styles.textBtn}>Orang Tua</Text>
+          </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.btnKader} onPress={()=>{onKader()}}>
+          <View style={styles.vLogoBtn}>
+            <Image source={LogoKader} style={styles.logoBtn}/>
+          </View>
+          <View style={styles.vCapBtn}>
+            <Text style={styles.textBtn}>Kader</Text>
+          </View>
+      </TouchableOpacity>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({

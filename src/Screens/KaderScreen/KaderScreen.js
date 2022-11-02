@@ -1,15 +1,10 @@
-import { Text, 
-    View,
-    StyleSheet, 
-    Dimensions, 
-    Image, 
-    TextInput, 
-    TouchableOpacity, 
-    Keyboard, Alert} from 'react-native'
+import { Text, View, StyleSheet, Dimensions, Image, TextInput, 
+    TouchableOpacity, Keyboard, Alert} from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto4.png'
 import { useNavigation } from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 const axios = require('axios')
 const windowWidth = Dimensions.get('window').width;
@@ -32,23 +27,31 @@ export default function KaderScreen() {
         )
       }
 
-    const onLoginPress = () => {
+    const saveAuth = async (userData) => {
+        EncryptedStorage.setItem("user", JSON.stringify({role: 'kader', data: userData}))
+        .then((result) => {
+            navigation.navigate('listAnak');
+        }).catch((err) => {
+            getAlert("Error", `Terjadi Kesalahan Saat Menyimpan sesi. ( ${err.message} )`, "kembali")
+        });
+    }
+
+    const onLoginPress = async () => {
         // navigation.navigate('listAnak');
         if (username != '' && password != '') {
             axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/kader/login`, {username, password})
               .then((result) => {
-                console.log(result)
                 if(result.data.status == 'Authorized'){
-                    navigation.navigate('listAnak');
+                    saveAuth(result)
                 } else {
                   getAlert("Login gagal", "Pastikan username dan password benar", "kembali")
                 }
               }).catch((err) => {
                 getAlert("Login gagal", "Pastikan username dan password benar", "kembali")
-              });
-          } else {
+            });
+        } else {
             getAlert("Login Gagal", "Pastikan username dan passsword telah terisi", "kembali")
-          }
+        }
     }
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", () => {

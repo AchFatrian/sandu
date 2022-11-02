@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Alert
 import React, { useState, useCallback } from 'react'
 import Riwayat from '../../component/InputRiwayat/InputRiwayat'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 const axios = require('axios')
 
@@ -9,6 +10,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function RiwayatAnakScreen({route}) {
+    const navigation = useNavigation('');
     const [data, setData] = useState([])
     const [birthDate, setBirthDate] = useState(null)
     const [name, setName] = useState('')
@@ -44,6 +46,15 @@ export default function RiwayatAnakScreen({route}) {
       });
     }
 
+    const logout = async () => {
+      try {
+          await EncryptedStorage.removeItem("user")
+          navigation.navigate('start')
+      } catch (err) {
+          getAlert("Error", "Terjadi Kesalahan Saat Keluar Akun", "kembali")
+      }
+    }
+
     useFocusEffect(
         useCallback(() => {
           getUserData(route.params.id)
@@ -53,8 +64,19 @@ export default function RiwayatAnakScreen({route}) {
   return (
     <View style={styles.container}>
       <View style={styles.controlScroll}>
-        <View style={styles.vTittle}>
+        <View style={[styles.vTittle, {flexDirection:'row'}]}>
             <Text style={styles.txtTittle}>Riwayat Data Anak</Text>
+            {
+              (route.params.state == 'user') ? (
+                <TouchableOpacity style={styles.btnLogOut} onPress={()=>{logout()}}>
+                  <Text style={styles.btnCap}>Keluar</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.btnLogOut} onPress={()=>{navigation.navigate('listAnak')}}>
+                  <Text style={styles.btnCap}>kembali</Text>
+                </TouchableOpacity>
+              )
+            }
         </View>
         <ScrollView style={styles.scrollContainer}>
             { data.map((prop, key) => {
@@ -70,9 +92,6 @@ export default function RiwayatAnakScreen({route}) {
                 )
             })}
         </ScrollView>
-        {/* <TouchableOpacity style={styles.btnLogOut}>
-                <Text style={styles.btnCap}>Kembali</Text>
-        </TouchableOpacity> */}
       </View>
     </View>
   )
@@ -94,9 +113,10 @@ const styles = StyleSheet.create({
     },
 
     txtTittle: {
-        fontSize: windowWidth * 0.05,
-        color: 'black',
-        fontWeight: '600',
+      fontSize: windowWidth * 0.05,
+      color: 'black',
+      fontWeight: '600',
+      paddingHorizontal: 20
     },
 
     controlScroll: {
@@ -112,18 +132,18 @@ const styles = StyleSheet.create({
     },
     
     btnLogOut:{
-        marginTop: windowHeight *0.03,
-        width: windowWidth * 0.35,
-        height: windowHeight * 0.05,
-        backgroundColor: '#4397AF',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius:29,
-        marginBottom: windowHeight * 0.05,
+      width: windowWidth * 0.25,
+      height: windowHeight * 0.04,
+      backgroundColor: '#4397AF',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius:29, 
+      marginHorizontal: 20,
+      marginLeft:'auto'
     },
 
     btnCap:{
-        fontSize: windowWidth *0.055,
+        fontSize: windowWidth *0.04,
         color: 'white',
     }
 })

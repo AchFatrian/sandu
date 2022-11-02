@@ -1,54 +1,42 @@
 import { View, Text, StyleSheet,TouchableOpacity, 
-    Dimensions, Image, TextInput, Keyboard } from 'react-native'
+    Dimensions, Image, TextInput, Keyboard, BackHandler, PermissionsAndroid, Alert } from 'react-native'
 import React, {useState, useEffect, useCallback} from 'react'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Berat from '../../../assets/img/berat1.png';
 import Next from '../../../assets/img/next.png';
-import RadioGroup from 'react-native-radio-buttons-group';
+import Previous from '../../../assets/img/previous.png';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const manual = {
-    id: '0', 
-    label: 'Manual',
-    value: 'manual',
-    borderColor: '#4397AF',
-    color:'#4397AF'
-}
 
-const otomatis = {
-    id: '1',
-    label: 'Otomatis',
-    value: 'otomatis',
-    borderColor: '#4397AF',
-    color:'#4397AF'
-}
+//======================== BLE ========================//
 
-export default function InputBeratScreen() {
+import base64 from 'react-native-base64';
+import {BleManager, Device} from 'react-native-ble-plx';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
+
+const BLTManager = new BleManager();
+const SERVICE_UUID = '1be79dcd-7069-4ac2-88f2-8dbc43adb8be';
+const MESSAGE_UUID = '16488d3c-24e5-4442-92ff-83b583f70d93';
+
+//======================== END BLE ========================//
+
+export default function InputBeratScreen({route}) {
     const navigation = useNavigation('');
     const [weight, setWeight] = useState(0)
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
     const [user, setUser] = useState({})
-    const [radioButtons, setRadioButtons] = useState([ 
-        {...manual, selected: false},
-        {...otomatis, selected: true}
-    ]);
+    const [auto, setAuto] = useState(true)
 
-    function onPressRadioButton(radioButtonsArray) {
-        setRadioButtons(radioButtonsArray);
-    }
-
-    const onNextPress = () => {
-        navigation.navigate('tinggi', weight);
-    }
-
+    const onPrevPress = () => { navigation.navigate('menu'); disconnectDevice() }
+    const onNextPress = () => { navigation.navigate('tinggi', weight), disconnectDevice() }
     const getAlert = (title, message, button) => {
         return(
-          Alert.alert(
-            title, message,
-            [{ text: button }]
-          )
+          Alert.alert( title, message, [{ text: button }] )
         )
       }
 
@@ -60,13 +48,11 @@ export default function InputBeratScreen() {
             getAlert("Error", `Terjadi Kesalahan Saat Mengambil Data, ( ${err.message} )`, "kembali")
         });
     }
-
+    
     useFocusEffect(
         useCallback(() => {
           getUsers()
-          onPressRadioButton([ {...manual, selected: false}, {...otomatis, selected: true} ])
-          onPressRadioButton([ {...manual, selected: true}, {...otomatis, selected: false} ])
-          onPressRadioButton([ {...manual, selected: false}, {...otomatis, selected: true} ])
+          scanDevices()
         }, [])
     )
 
@@ -78,7 +64,107 @@ export default function InputBeratScreen() {
             setIsKeyboardVisible(false);
         })
     }, [isKeyboarVisible])
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
     
+    //======================== BLE ========================//
+    const [isConnected, setIsConnected] = useState(false); //Is a device connected?
+    const [connectedDevice, setConnectedDevice] = useState(); //What device is connected?
+    const [log, setLog] = useState('')
+    
+    // Scans availbale BLT Devices and then call connectDevice
+    async function scanDevices() {
+        PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+            title: 'Permission Localisation Bluetooth',
+            message: 'Requirement for Bluetooth',
+            buttonNeutral: 'Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+        },
+        ).then(answere => {
+            console.log('scanning');
+            setLog('scanning')
+            // display the Activityindicator
+            BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
+                if (error) { console.warn(error) }
+                if (scannedDevice && scannedDevice.name == 'BLEExample') {
+                    BLTManager.stopDeviceScan();
+                    connectDevice(scannedDevice);
+                }
+            });
+
+            // stop scanning devices after 5 seconds
+            setTimeout(() => { BLTManager.stopDeviceScan() }, 5000);
+        });
+    }
+
+    // handle the device disconnection (poorly)
+    async function disconnectDevice() {
+        console.log('Disconnecting start');
+        setLog('Disconnecting start')
+        if (connectedDevice != null) {
+            const isDeviceConnected = await connectedDevice.isConnected();
+            if (isDeviceConnected) {
+                BLTManager.cancelTransaction('messagetransaction');
+                BLTManager.cancelTransaction('nightmodetransaction');
+                BLTManager.cancelDeviceConnection(connectedDevice.id)
+                .then(() => {
+                    console.log('DC completed') 
+                    setLog('DC completed')
+                });
+            }
+
+            const connectionStatus = await connectedDevice.isConnected();
+            if (!connectionStatus) { setIsConnected(false) }
+        }
+    }
+
+    //Connect the device and start monitoring characteristics
+    async function connectDevice(device) {
+        console.log('connecting to Device:', device.name);
+        setLog(`connecting to Device: ${device.name}`);
+        device.connect()
+        .then(device => {
+            setConnectedDevice(device);
+            setIsConnected(true);
+            return device.discoverAllServicesAndCharacteristics();
+        })
+        .then(device => {
+            //  Set what to do when DC is detected
+            BLTManager.onDeviceDisconnected(device.id, (error, device) => {
+                console.log('Device Disconected');
+                setLog('Device Disconected')
+                setIsConnected(false);
+            });
+
+            //Read inital values 
+            device.readCharacteristicForService(SERVICE_UUID, MESSAGE_UUID)
+            .then(valenc => { setWeight(base64.decode(valenc?.value)) });
+
+            //monitor values and tell what to do when receiving an update
+            device.monitorCharacteristicForService( SERVICE_UUID, MESSAGE_UUID,
+                (error, characteristic) => {
+                    if (characteristic?.value != null) {
+                        setWeight(base64.decode(characteristic?.value));
+                        console.log(
+                            'Message update received: ', 
+                            base64.decode(characteristic?.value),
+                        );
+                    }
+                },
+                'messagetransaction',
+            );
+            console.log('Connection established');
+            setLog('Connection established')
+        });
+    }
+
+    //======================== END BLE ========================//
 
   return (
     <View style={styles.container}>
@@ -90,28 +176,45 @@ export default function InputBeratScreen() {
                 <Text style={styles.txtNik}>{user.childs_nik}</Text>
             </View>
         </View>
+
         <View style={styles.containerInput}>
+            <Text style={styles.txtCap}>Berat Badan</Text>
             {
                 (!isKeyboarVisible) ? (
                     <Image source={Berat} style={styles.img}/>
                 ) : null
             }
-            <Text style={styles.txtCap}>Berat Badan</Text>
+            
             <View style={styles.txtCap}>
-                <RadioGroup 
-                    radioButtons={radioButtons} 
-                    onPress={onPressRadioButton} 
-                    layout='row'
-                />
+                <TouchableOpacity 
+                    style={[styles.btnBl,{backgroundColor:`${auto ? '#f2f2f2' : '#4397AF'}`}]}
+                    onPress={()=>{disconnectDevice(); setAuto(false); setWeight(0)}}
+                >
+                    <Text style={[styles.btnCap,{color:`${auto ? '#4397AF' : '#f2f2f2'}`}]}>Manual</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.btnBl,{backgroundColor:`${auto ? '#4397AF' : '#f2f2f2'}`}]}
+                    onPress={()=>{scanDevices(); setAuto(true); setWeight(0)}}
+                >
+                    <Text style={[styles.btnCap,{color:`${auto ? '#f2f2f2' : '#4397AF'}`}]}>Otomatis</Text>
+                </TouchableOpacity>
             </View>
-            <View style={[styles.vInput,{display: radioButtons[1].selected ? 'flex' : 'none'}]}>
-                <Text style={styles.tCap}>20 Kg</Text>
+            <View style={styles.vConInput}>
+                <View style={[styles.vInput,{display: auto ? 'flex' : 'none'}]}>
+                    <Text style={styles.tCap}>{weight}</Text>
+                </View>
+                <TextInput style={[styles.vInput,{display: !auto ? 'flex' : 'none'}]} onChangeText={setWeight} value={weight}/>
+                <Text style={styles.tCap}>Kg</Text>
             </View>
-            <TextInput style={[styles.vInput,{display: radioButtons[0].selected ? 'flex' : 'none'}]} 
-            onChangeText={setWeight} value={weight}/>
-            <TouchableOpacity style={styles.tBtn} onPress={onNextPress}>
-                <Image source={Next} style={styles.imgNext}/>
-            </TouchableOpacity>
+            <Text>{log}</Text>
+            <View style={styles.vBtn}>
+                <TouchableOpacity style={styles.tBtnPrev} onPress={onPrevPress}>
+                    <Image source={Previous} style={styles.imgNav}/>
+                </TouchableOpacity> 
+                <TouchableOpacity style={styles.tBtnNext} onPress={onNextPress}>
+                    <Image source={Next} style={styles.imgNav}/>
+                </TouchableOpacity> 
+            </View>
         </View>
       </View>
     </View>
@@ -181,7 +284,7 @@ const styles = StyleSheet.create({
     img:{
         width: windowWidth * 0.5,
         height: windowHeight * 0.27,
-        marginTop: windowHeight * 0.04,
+        marginVertical: windowHeight * 0.02,
     },
 
     txtCap:{
@@ -189,19 +292,27 @@ const styles = StyleSheet.create({
         fontSize: windowWidth * 0.05,
         color: 'black',
         fontWeight: '600',
-        
+        flexDirection: 'row'
     },
 
     vInput:{
-        width: windowWidth * 0.55,
+        width: windowWidth * 0.4,
         height: windowHeight * 0.06,
         backgroundColor: '#4397af33',
         borderRadius: 8,
         marginVertical: windowHeight * 0.02,
+        marginRight: windowHeight * 0.02,
         borderColor: '#4397AF',
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+
+    vConInput:{
+        // marginVertical: windowHeight * 0.02,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
     },
 
     tCap:{
@@ -209,15 +320,37 @@ const styles = StyleSheet.create({
         fontSize: windowWidth * 0.05,
     },
 
-    tBtn:{
-        marginTop: windowHeight * 0.03,
-        marginLeft: windowWidth * 0.6,
-        width: windowWidth * 0.2,
-        height: windowHeight * 0.08
+    vBtn:{
+        width: '100%',
+        flexDirection: 'row',
     },
 
-    imgNext:{
-        width: windowWidth * 0.132,
-        height: windowHeight * 0.07
+    tBtnPrev:{
+        marginTop: windowHeight * 0.025,
+        marginLeft: windowWidth * 0.085,
+    },
+
+    tBtnNext:{
+        marginTop: windowHeight * 0.025,
+        marginLeft: windowWidth * 0.43,
+    },
+
+    imgNav:{
+        width: windowWidth * 0.1,
+        height: windowHeight * 0.05
+    },
+
+    btnCap:{
+        fontSize: windowWidth *0.04,
+        // color: 'white',
+    },
+
+    btnBl:{
+        paddingHorizontal: windowHeight * 0.015,
+        paddingVertical: windowHeight * 0.004,
+        marginHorizontal: windowHeight * 0.01,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius:10
     },
 })

@@ -37,7 +37,6 @@ export default function ListAnakScreen() {
     const getUsers = async () => {
         axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users`)
         .then((result) => {
-            // console.log(result.data)
             setUsers(result.data)
         }).catch((err) => {
           getAlert("Error", "Terjadi Kesalahan Saat Menampilkan Data", "kembali")
@@ -45,13 +44,21 @@ export default function ListAnakScreen() {
     }
 
     const deleteUser = async (id) => {
-        console.log(id)
         axios.delete(`https://harlequin-bullfrog-tie.cyclic.app/api/users`,{ data: {user_id: id} })
         .then((result) => {
             getUsers()
         }).catch((err) => {
           getAlert("Error", "Terjadi Kesalahan Menghapus Data", "kembali")
         });
+    }
+
+    const logout = async () => {
+        try {
+            await EncryptedStorage.removeItem("user")
+            navigation.navigate('start')
+        } catch (err) {
+            getAlert("Error", "Terjadi Kesalahan Saat Keluar Akun", "kembali")
+        }
     }
 
     useFocusEffect(
@@ -82,7 +89,9 @@ export default function ListAnakScreen() {
                 })}
             </ScrollView>
             <TouchableOpacity style={styles.btnLogOut}>
-                <Text style={styles.btnCap}>Keluar</Text>
+                <Text style={styles.btnCap} onPress={()=>{logout()}}>
+                    Keluar
+                </Text>
             </TouchableOpacity>
         </View>
     </View>

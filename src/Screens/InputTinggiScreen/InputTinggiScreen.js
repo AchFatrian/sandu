@@ -1,17 +1,14 @@
 import { View, Text, StyleSheet,TouchableOpacity, 
-    Dimensions, Image,TextInput, Keyboard } from 'react-native'
+    Dimensions, Image, TextInput, Keyboard, BackHandler, PermissionsAndroid, Alert } from 'react-native'
 import React, {useState, useEffect, useCallback} from 'react'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Tinggi from '../../../assets/img/tinggi1.png';
 import Next from '../../../assets/img/next.png';
 import Previous from '../../../assets/img/previous.png';
-import RadioGroup from 'react-native-radio-buttons-group';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const manual = {id:'0',label:'Manual',value:'manual',borderColor:'#4397AF',color:'#4397AF'}
-const otomatis = {id:'1',label:'Otomatis',value:'otomatis',borderColor:'#4397AF',color:'#4397AF'}
 
 //======================== BLE ========================//
 
@@ -33,19 +30,15 @@ export default function InputTinggiScreen({route}) {
     const [height, setHeight] = useState(0)
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
     const [user, setUser] = useState({})
-    const [radioButtons, setRadioButtons] = useState([ 
-        {...manual, selected: false},
-        {...otomatis, selected: true}
-    ]);
+    const [auto, setAuto] = useState(true)
 
-    const onPressRadioButton = (radioButtonsArray) => { setRadioButtons(radioButtonsArray) }
-    const onPrevPress = () => { navigation.navigate('berat') }
-    const onNextPress = () => { navigation.navigate('preview', { weight: route.params, height }) } 
+    const onPrevPress = () => { navigation.navigate('berat'); disconnectDevice() }
+    const onNextPress = () => { navigation.navigate('preview', { height: route.params, height }); disconnectDevice() } 
     const getAlert = (title, message, button) => {
         return(
           Alert.alert( title, message, [{ text: button }] )
         )
-      }
+    }
 
     const getUsers = async () => {
         EncryptedStorage.getItem("selected_user")
@@ -59,9 +52,7 @@ export default function InputTinggiScreen({route}) {
     useFocusEffect(
         useCallback(() => {
           getUsers()
-          onPressRadioButton([ {...manual, selected: false}, {...otomatis, selected: true} ])
-          onPressRadioButton([ {...manual, selected: true}, {...otomatis, selected: false} ])
-          onPressRadioButton([ {...manual, selected: false}, {...otomatis, selected: true} ])
+          scanDevices()
         }, [])
     )
 
@@ -74,10 +65,15 @@ export default function InputTinggiScreen({route}) {
         })
     }, [isKeyboarVisible])
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
+
     //======================== BLE ========================//
     const [isConnected, setIsConnected] = useState(false); //Is a device connected?
     const [connectedDevice, setConnectedDevice] = useState(); //What device is connected?
-    const [message, setMessage] = useState('Nothing Yet');
+    const [log, setLog] = useState('')
     
     // Scans availbale BLT Devices and then call connectDevice
     async function scanDevices() {
@@ -92,6 +88,7 @@ export default function InputTinggiScreen({route}) {
         },
         ).then(answere => {
             console.log('scanning');
+            setLog('scanning')
             // display the Activityindicator
             BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
                 if (error) { console.warn(error) }
@@ -109,13 +106,17 @@ export default function InputTinggiScreen({route}) {
     // handle the device disconnection (poorly)
     async function disconnectDevice() {
         console.log('Disconnecting start');
+        setLog('Disconnecting start')
         if (connectedDevice != null) {
             const isDeviceConnected = await connectedDevice.isConnected();
             if (isDeviceConnected) {
                 BLTManager.cancelTransaction('messagetransaction');
                 BLTManager.cancelTransaction('nightmodetransaction');
                 BLTManager.cancelDeviceConnection(connectedDevice.id)
-                .then(() => console.log('DC completed'));
+                .then(() => {
+                    console.log('DC completed')
+                    setLog('DC completed')
+                });
             }
 
             const connectionStatus = await connectedDevice.isConnected();
@@ -126,6 +127,7 @@ export default function InputTinggiScreen({route}) {
     //Connect the device and start monitoring characteristics
     async function connectDevice(device) {
         console.log('connecting to Device:', device.name);
+        setLog(`connecting to Device: ${device.name}`);
         device.connect()
         .then(device => {
             setConnectedDevice(device);
@@ -135,19 +137,20 @@ export default function InputTinggiScreen({route}) {
         .then(device => {
             //  Set what to do when DC is detected
             BLTManager.onDeviceDisconnected(device.id, (error, device) => {
-                console.log('Device DC');
+                console.log('Device Disconected');
+                setLog('Device Disconected')
                 setIsConnected(false);
             });
 
             //Read inital values 
             device.readCharacteristicForService(SERVICE_UUID, MESSAGE_UUID)
-            .then(valenc => { setMessage(base64.decode(valenc?.value)) });
+            .then(valenc => { setHeight(base64.decode(valenc?.value)) });
 
             //monitor values and tell what to do when receiving an update
             device.monitorCharacteristicForService( SERVICE_UUID, MESSAGE_UUID,
                 (error, characteristic) => {
                     if (characteristic?.value != null) {
-                        setMessage(base64.decode(characteristic?.value));
+                        setHeight(base64.decode(characteristic?.value));
                         console.log(
                             'Message update received: ', 
                             base64.decode(characteristic?.value),
@@ -157,6 +160,7 @@ export default function InputTinggiScreen({route}) {
                 'messagetransaction',
             );
             console.log('Connection established');
+            setLog('Connection established')
         });
     }
 
@@ -173,42 +177,36 @@ export default function InputTinggiScreen({route}) {
                 </View>
             </View>
 
-            {/* Connect Button */}
-            <View>
-                <TouchableOpacity style={{width: 120}}>
-                {!isConnected ? (
-                    <Button title="Connect" onPress={()=>{ scanDevices() }} disabled={false}/>
-                ) : ( 
-                    <Button title="Disonnect" onPress={()=>{ disconnectDevice() }} disabled={false}/>
-                )}
-                </TouchableOpacity>
-            </View>
-
-            {/* Monitored Value */}
-            <View> 
-                <Text >{message}</Text>
-            </View>
-
-            {/* <Text>{route.params}</Text> */}
             <View style={styles.containerInput}>
+                <Text style={styles.txtCap}>Tinggi Badan</Text>
                 {
                     (!isKeyboarVisible) ? (
                         <Image source={Tinggi} style={styles.img}/>
                     ) : null
                 }
-                <Text style={styles.txtCap}>Tinggi Badan</Text>
+                
                 <View style={styles.txtCap}>
-                    <RadioGroup 
-                        radioButtons={radioButtons} 
-                        onPress={onPressRadioButton} 
-                        layout='row'
-                    />
+                    <TouchableOpacity 
+                        style={[styles.btnBl,{backgroundColor:`${auto ? '#f2f2f2' : '#4397AF'}`}]}
+                        onPress={()=>{disconnectDevice(); setAuto(false); setHeight(0)}}
+                    >
+                        <Text style={[styles.btnCap,{color:`${auto ? '#4397AF' : '#f2f2f2'}`}]}>Manual</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[styles.btnBl,{backgroundColor:`${auto ? '#4397AF' : '#f2f2f2'}`}]}
+                        onPress={()=>{scanDevices(); setAuto(true); setHeight(0)}}
+                    >
+                        <Text style={[styles.btnCap,{color:`${auto ? '#f2f2f2' : '#4397AF'}`}]}>Otomatis</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={[styles.vInput,{display: radioButtons[1].selected ? 'flex' : 'none'}]}>
-                    <Text style={styles.tCap}>90 Cm</Text>
+                <View style={styles.vConInput}>
+                    <View style={[styles.vInput,{display: auto ? 'flex' : 'none'}]}>
+                        <Text style={styles.tCap}>{height}</Text>
+                    </View>
+                    <TextInput style={[styles.vInput,{display: !auto ? 'flex' : 'none'}]} onChangeText={setHeight} value={height}/>
+                    <Text style={styles.tCap}>Cm</Text>
                 </View>
-                <TextInput style={[styles.vInput,{display: radioButtons[0].selected ? 'flex' : 'none'}]} 
-                onChangeText={setHeight} value={height}/>
+                <Text>{log}</Text>
                 <View style={styles.vBtn}>
                     <TouchableOpacity style={styles.tBtnPrev} onPress={onPrevPress}>
                         <Image source={Previous} style={styles.imgNav}/>
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
         marginLeft: windowWidth * 0.03,
         marginTop: windowHeight * 0.01,
         color:'#4397AF',
-        fontWeight:'700',
+        fontheight:'700',
     },
     
     txtNik:{ 
@@ -271,7 +269,7 @@ const styles = StyleSheet.create({
         marginLeft: windowWidth * 0.03,
         marginTop: windowHeight * 0.01,
         color:'#4397AF',
-        fontWeight:'400',
+        fontheight:'400',
     },
 
     containerInput:{
@@ -286,27 +284,35 @@ const styles = StyleSheet.create({
     img:{
         width: windowWidth * 0.5,
         height: windowHeight * 0.27,
-        marginTop: windowHeight * 0.04,
+        marginVertical: windowHeight * 0.02,
     },
 
     txtCap:{
         marginTop: windowWidth * 0.02,
         fontSize: windowWidth * 0.05,
         color: 'black',
-        fontWeight: '600',
-        
+        fontheight: '600',
+        flexDirection: 'row'
     },
 
     vInput:{
-        width: windowWidth * 0.55,
+        width: windowWidth * 0.4,
         height: windowHeight * 0.06,
         backgroundColor: '#4397af33',
         borderRadius: 8,
-        marginBottom: windowHeight * 0.007,
+        marginVertical: windowHeight * 0.02,
+        marginRight: windowHeight * 0.02,
         borderColor: '#4397AF',
         borderWidth: 1,
         alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    vConInput:{
+        // marginVertical: windowHeight * 0.02,
+        alignItems: 'center',
         justifyContent: 'center',
+        flexDirection: 'row'
     },
 
     tCap:{
@@ -320,18 +326,31 @@ const styles = StyleSheet.create({
     },
 
     tBtnPrev:{
-        marginTop: windowHeight * 0.04,
+        marginTop: windowHeight * 0.025,
         marginLeft: windowWidth * 0.085,
     },
 
     tBtnNext:{
-        marginTop: windowHeight * 0.04,
-        marginLeft: windowWidth * 0.363,
+        marginTop: windowHeight * 0.025,
+        marginLeft: windowWidth * 0.43,
     },
 
     imgNav:{
-        width: windowWidth * 0.132,
-        height: windowHeight * 0.07
+        width: windowWidth * 0.1,
+        height: windowHeight * 0.05
     },
 
+    btnCap:{
+        fontSize: windowWidth *0.04,
+        // color: 'white',
+    },
+
+    btnBl:{
+        paddingHorizontal: windowHeight * 0.015,
+        paddingVertical: windowHeight * 0.004,
+        marginHorizontal: windowHeight * 0.01,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius:10
+    },
 })
