@@ -87,12 +87,23 @@ export default function InputBeratScreen({route}) {
             buttonPositive: 'OK',
         },
         ).then(answere => {
-            console.log('scanning');
-            setLog('scanning')
+            console.log('Mencari Perangkat ...');
+            setLog('Mencari Perangkat ...')
             // display the Activityindicator
             BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
-                if (error) { console.warn(error) }
-                if (scannedDevice && scannedDevice.name == 'BLEExample') {
+                if (error) { 
+                    console.warn(error) 
+                    Alert.alert(
+                        'Peringatan',
+                        `Pastikan Bluetooth dan Lokasi telah diaktifkan, ( ${error.message} )`,
+                        [ 
+                            { text: 'Kembali', onPress:()=>onPrevPress() },
+                            { text: 'Mode Manual', onPress:()=>{manualMode()} }
+                        ],
+                        { cancelable: false }
+                    )
+                }
+                if (scannedDevice && scannedDevice.name == 'SANDU') {
                     BLTManager.stopDeviceScan();
                     connectDevice(scannedDevice);
                 }
@@ -105,8 +116,8 @@ export default function InputBeratScreen({route}) {
 
     // handle the device disconnection (poorly)
     async function disconnectDevice() {
-        console.log('Disconnecting start');
-        setLog('Disconnecting start')
+        console.log('Memutus Koneksi ....');
+        setLog('Memutus Koneksi ....')
         if (connectedDevice != null) {
             const isDeviceConnected = await connectedDevice.isConnected();
             if (isDeviceConnected) {
@@ -114,8 +125,8 @@ export default function InputBeratScreen({route}) {
                 BLTManager.cancelTransaction('nightmodetransaction');
                 BLTManager.cancelDeviceConnection(connectedDevice.id)
                 .then(() => {
-                    console.log('DC completed') 
-                    setLog('DC completed')
+                    console.log('Berhasil Memutus Koneksi') 
+                    setLog('Berhasil Memutus Koneksi')
                 });
             }
 
@@ -126,8 +137,8 @@ export default function InputBeratScreen({route}) {
 
     //Connect the device and start monitoring characteristics
     async function connectDevice(device) {
-        console.log('connecting to Device:', device.name);
-        setLog(`connecting to Device: ${device.name}`);
+        console.log('Menghubungkan ke perangkat: ', device.name);
+        setLog(`Menghubungkan ke perangkat: ${device.name}`);
         device.connect()
         .then(device => {
             setConnectedDevice(device);
@@ -137,8 +148,8 @@ export default function InputBeratScreen({route}) {
         .then(device => {
             //  Set what to do when DC is detected
             BLTManager.onDeviceDisconnected(device.id, (error, device) => {
-                console.log('Device Disconected');
-                setLog('Device Disconected')
+                console.log('Koneksi Terputus');
+                setLog('Koneksi Terputus')
                 setIsConnected(false);
             });
 
@@ -150,20 +161,25 @@ export default function InputBeratScreen({route}) {
             device.monitorCharacteristicForService( SERVICE_UUID, MESSAGE_UUID,
                 (error, characteristic) => {
                     if (characteristic?.value != null) {
-                        setWeight(base64.decode(characteristic?.value));
+                        setWeight(base64.decode(characteristic?.value).split('-')[0]);
                         console.log(
                             'Message update received: ', 
-                            base64.decode(characteristic?.value),
+                            base64.decode(characteristic?.value).split('-')[0],
                         );
                     }
                 },
                 'messagetransaction',
             );
-            console.log('Connection established');
-            setLog('Connection established')
+            console.log('Berhasil terhubung');
+            setLog('Berhasil terhubung')
         });
     }
 
+    const manualMode = () => {
+        disconnectDevice(); setAuto(false); setWeight(0); setLog('Menggunakan Model Manual')
+    }
+
+    const dateNow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
     //======================== END BLE ========================//
 
   return (
@@ -172,8 +188,11 @@ export default function InputBeratScreen({route}) {
         <View style={styles.containerNama} >
             <View style={styles.leftColor}></View>
             <View style={styles.vCaption}>
-                <Text style={styles.txtNama}>{user.childs_name}</Text>
-                <Text style={styles.txtNik}>{user.childs_nik}</Text>
+                <Text style={styles.txtNama}>{`${user.childs_name}`}</Text>
+                <View style={{flexDirection:'row'}}>
+                    <Text style={styles.txtNik}>{user.childs_nik}</Text>
+                    <Text style={[styles.txtNik, {fontWeight:'bold'}]}>{`(${Math.round((((dateNow - user.childs_birth)/2678400000) + Number.EPSILON) * 10)/10 || 0} bulan)`}</Text>
+                </View>
             </View>
         </View>
 
@@ -188,7 +207,7 @@ export default function InputBeratScreen({route}) {
             <View style={styles.txtCap}>
                 <TouchableOpacity 
                     style={[styles.btnBl,{backgroundColor:`${auto ? '#f2f2f2' : '#4397AF'}`}]}
-                    onPress={()=>{disconnectDevice(); setAuto(false); setWeight(0)}}
+                    onPress={()=>{manualMode()}}
                 >
                     <Text style={[styles.btnCap,{color:`${auto ? '#4397AF' : '#f2f2f2'}`}]}>Manual</Text>
                 </TouchableOpacity>
@@ -203,7 +222,8 @@ export default function InputBeratScreen({route}) {
                 <View style={[styles.vInput,{display: auto ? 'flex' : 'none'}]}>
                     <Text style={styles.tCap}>{weight}</Text>
                 </View>
-                <TextInput style={[styles.vInput,{display: !auto ? 'flex' : 'none'}]} onChangeText={setWeight} value={weight}/>
+                <TextInput style={[styles.vInput,{display: !auto ? 'flex' : 'none', }]} 
+                textAlign={'center'} keyboardType={'numeric'} onChangeText={setWeight} value={weight}/>
                 <Text style={styles.tCap}>Kg</Text>
             </View>
             <Text>{log}</Text>

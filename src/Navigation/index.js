@@ -7,6 +7,7 @@ import StartScreen from '../Screens/StartScreen';
 import OrtuScreen from '../Screens/OrtuScreen';
 import KaderScreen from '../Screens/KaderScreen';
 import DaftarScreen from '../Screens/DaftarScreen';
+import EditScreen from '../Screens/EditScreen';
 import ListAnakScreen from '../Screens//ListAnakScreen';
 import InputDataScreen from '../Screens/InputDataScreen/InputDataScreen';
 import MenuScreen from '../Screens/MenuScreen';
@@ -29,6 +30,7 @@ const Navigation = () => {
                 <Stack.Screen name="ortu" component={OrtuScreen} />
                 <Stack.Screen name="kader" component={KaderScreen} />
                 <Stack.Screen name="daftar" component={DaftarScreen} />
+                <Stack.Screen name="edit" component={EditScreen} />
                 <Stack.Screen name="listAnak" component={ListAnakScreen} />
                 <Stack.Screen name="menu" component={MenuScreen} />
                 <Stack.Screen name="input" component={InputDataScreen} />

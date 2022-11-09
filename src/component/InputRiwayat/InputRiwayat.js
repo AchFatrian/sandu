@@ -10,7 +10,7 @@ import Hapus from '../../../assets/img/delete1.png';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const dateNow = new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate()).getTime()
+const dateNow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
 
 const InputRiwayat = ({data, birthDate, name, del, status}) =>{
     console.log(data)
@@ -71,7 +71,7 @@ const InputRiwayat = ({data, birthDate, name, del, status}) =>{
                                 <Image source={StatusTinggi} style={styles.image}/>
                             </View>
                             <View style={styles.vCap}>
-                                <Text style={styles.textCaption}>{data.status_h || "status"}</Text>
+                                <Text style={styles.textCaption}>{data.status_h}</Text>
                             </View>
                         </View>
                         <View style={styles.vCapImgStatus}>
@@ -80,7 +80,7 @@ const InputRiwayat = ({data, birthDate, name, del, status}) =>{
                                 <Image source={StatusBerat} style={styles.image}/>
                             </View>
                             <View style={styles.vCap}>
-                                <Text style={styles.textCaption}>{data.status_w || "status"}</Text>
+                                <Text style={styles.textCaption}>{data.status_w}</Text>
                             </View>
                         </View>
                         <View style={styles.vCapImg}>
@@ -89,7 +89,7 @@ const InputRiwayat = ({data, birthDate, name, del, status}) =>{
                                 <Image source={Status} style={styles.image}/>
                             </View>
                             <View style={styles.vCap}>
-                                <Text style={styles.textCaption}>{data.status_a || "status"}</Text>
+                                <Text style={styles.textCaption}>{data.status_a}</Text>
                             </View>
                         </View>
                     </View>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     },
 
     vCapImg: {
-        width: '20%',
+        width: '30%',
         height: '85%',
         // borderWidth: 1,
         alignItems: 'center',
@@ -187,15 +187,15 @@ const styles = StyleSheet.create({
     },
 
     txtCapImg:{
-        fontSize: windowWidth * 0.02,
+        fontSize: windowWidth * 0.03,
         color: 'black',
         fontWeight: 'bold',
     },
 
     image: {
         marginTop: windowHeight * 0.007,
-        width: '60%',
-        height: '60%',
+        width: '50%',
+        height: '61%',
     },
 
     vCap:{
@@ -209,12 +209,12 @@ const styles = StyleSheet.create({
     },
 
     textCaption: {
-        fontSize: windowWidth * 0.04,
+        fontSize: windowWidth * 0.034,
         color: 'black',
     },
 
     vCapImgStatus: {
-        width: '20%',
+        width: '30%',
         height: '85%',
         // borderWidth: 1,
         alignItems: 'center',

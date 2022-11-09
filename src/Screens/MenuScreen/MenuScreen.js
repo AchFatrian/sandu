@@ -43,6 +43,10 @@ export default function MenuScreen() {
         });
     }
 
+    const editData = async () => {
+        navigation.navigate('edit', user);
+    }
+
     useFocusEffect(
         useCallback(() => {
           getUsers()
@@ -51,14 +55,16 @@ export default function MenuScreen() {
     return (
     <View style={styles.container}>
       <View style={styles.control}>
-        <TouchableOpacity style={styles.tBackImg} onPress={onBackPress}>
-            <Image source={Back} style={styles.backImg}/>
-        </TouchableOpacity>
         <View style={styles.containerNama} >
            <View style={styles.leftColor}></View>
            <View style={styles.vCaption}>
-                <Text style={styles.txtNama}>{user.childs_name}</Text>
-                <Text style={styles.txtNik}>{user.childs_nik}</Text>
+                <Text style={styles.txtNama}>Profil Anak</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Nama Anak :</Text> {user.childs_name}</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>NIK Anak : </Text>{user.childs_nik}</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Nama Ortu : </Text>{user.parents_name}</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Tgl Lahir : </Text>{new Date(user.childs_birth).toLocaleDateString()}</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Jenis Kelamin : </Text>{user.childs_gender == 'laki' ? 'laki - laki' : 'perempuan'}</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>No.HP : </Text>{user.parents_phone}</Text>
            </View>
         </View>
         <TouchableOpacity style={styles.tBtn} onPress={onLihatPress}>
@@ -69,6 +75,16 @@ export default function MenuScreen() {
             <Text style={styles.txtCap}>Masukan Data</Text>
             <Image source={Input} style={styles.iInput}/>
         </TouchableOpacity>
+        <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.tBackImg} onPress={onBackPress}>
+                <Image source={Back} style={styles.backImg}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btnLogOut}>
+                <Text style={styles.btnCap} onPress={()=>{editData()}}>
+                    Edit
+                </Text>
+            </TouchableOpacity>
+        </View>
       </View>
     </View>
   )
@@ -91,19 +107,20 @@ const styles = StyleSheet.create({
 
     tBackImg: {
         // borderWidth: 1,
-        marginRight: windowWidth * 0.75,
+        marginLeft:'auto',
+        // marginRight: windowWidth * 0.75,
         marginTop: windowHeight * 0.04,
     },
 
     backImg: {
-        width: windowWidth * 0.025,
-        height: windowHeight * 0.035,
+        width: windowWidth * 0.04,
+        height: windowHeight * 0.04,
     },
 
     containerNama: {
         marginTop: windowWidth *0.06,
         width: windowWidth * 0.8,
-        height: windowHeight * 0.1,
+        height: windowHeight * 0.23,
         borderRadius: 10,
         flexDirection: 'row',
         backgroundColor: 'white',
@@ -123,19 +140,36 @@ const styles = StyleSheet.create({
     txtNama:{
         fontSize: windowWidth * 0.05,
         marginLeft: windowWidth * 0.03,
-        marginTop: windowHeight * 0.01,
+        marginTop: windowHeight * 0.003,
         color:'#4397AF',
         fontWeight:'700',
+        textDecorationLine:'underline'
     },
     
     txtNik:{ 
         fontSize: windowWidth * 0.04,
         marginLeft: windowWidth * 0.03,
-        marginTop: windowHeight * 0.01,
+        marginTop: windowHeight * 0.003,
         color:'#4397AF',
         fontWeight:'400',
     },
 
+    btnLogOut:{
+        marginTop: windowHeight * 0.03,
+        width: windowWidth * 0.35,
+        height: windowHeight * 0.05,
+        backgroundColor: '#4397AF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius:29,
+        marginBottom: windowHeight * 0.05,
+        marginLeft: windowHeight * 0.15
+    },
+
+    btnCap:{
+        fontSize: windowWidth *0.055,
+        color: 'white',
+    },
     
     tBtn: { 
         marginHorizontal: windowWidth *0.032,

@@ -65,7 +65,7 @@ export default function KaderScreen() {
           console.warn(error);
         }
 
-        if (scannedDevice && scannedDevice.name == 'BLEExample') {
+        if (scannedDevice && scannedDevice.name == 'SANDU') {
           BLTManager.stopDeviceScan();
           connectDevice(scannedDevice);
         }

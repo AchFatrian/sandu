@@ -14,6 +14,7 @@ export default function RiwayatAnakScreen({route}) {
     const [data, setData] = useState([])
     const [birthDate, setBirthDate] = useState(null)
     const [name, setName] = useState('')
+    const [allData, setAllData] = useState({})
 
     const getAlert = (title, message, button) => {
         return(
@@ -23,11 +24,21 @@ export default function RiwayatAnakScreen({route}) {
           )
         )
       }
+
+      const profil = () => {
+        return(
+          Alert.alert(
+            "Profil Anda", 
+            `*Jika ada kesalahan data, silahkan menghubungi kader untuk merubah data\n\nNIK Anak : ${allData.childs_nik}\nNama Anak : ${allData.childs_name}\nNama Orang Tua : ${allData.parents_name}\nTgl Lahir : ${allData.childs_birth}\nJenis Kelamin : ${allData.childs_gender == 'laki' ? 'laki - laki' : 'perempuan'}\nNo.HP : ${allData.parents_phone}`,
+            [{ text: "kembali" }]
+          )
+        )
+      }
     
     const getUserData = async (id) => {
         axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users/id/${id}`)
         .then((result) => {
-            // console.log(result.data[0])
+            setAllData(result.data[0])
             setData(result.data[0].data)
             setBirthDate(result.data[0].childs_birth)
             setName(result.data[0].childs_name)
@@ -68,9 +79,14 @@ export default function RiwayatAnakScreen({route}) {
             <Text style={styles.txtTittle}>Riwayat Data Anak</Text>
             {
               (route.params.state == 'user') ? (
-                <TouchableOpacity style={styles.btnLogOut} onPress={()=>{logout()}}>
-                  <Text style={styles.btnCap}>Keluar</Text>
-                </TouchableOpacity>
+                <View style={{flexDirection:'row'}}>
+                  <TouchableOpacity style={styles.btnLogOut} onPress={()=>{logout()}}>
+                    <Text style={styles.btnCap}>Keluar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.btnLogOut} onPress={()=>{profil()}}>
+                    <Text style={styles.btnCap}>Profil</Text>
+                  </TouchableOpacity>
+                </View>
               ) : (
                 <TouchableOpacity style={styles.btnLogOut} onPress={()=>{navigation.navigate('listAnak')}}>
                   <Text style={styles.btnCap}>kembali</Text>
@@ -132,13 +148,13 @@ const styles = StyleSheet.create({
     },
     
     btnLogOut:{
-      width: windowWidth * 0.25,
+      width: windowWidth * 0.17,
       height: windowHeight * 0.04,
       backgroundColor: '#4397AF',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius:29, 
-      marginHorizontal: 20,
+      borderRadius:10, 
+      marginHorizontal: 8,
       marginLeft:'auto'
     },
 

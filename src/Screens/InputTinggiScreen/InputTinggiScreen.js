@@ -33,7 +33,7 @@ export default function InputTinggiScreen({route}) {
     const [auto, setAuto] = useState(true)
 
     const onPrevPress = () => { navigation.navigate('berat'); disconnectDevice() }
-    const onNextPress = () => { navigation.navigate('preview', { height: route.params, height }); disconnectDevice() } 
+    const onNextPress = () => { navigation.navigate('preview', { weight: route.params, height }); disconnectDevice() } 
     const getAlert = (title, message, button) => {
         return(
           Alert.alert( title, message, [{ text: button }] )
@@ -87,12 +87,23 @@ export default function InputTinggiScreen({route}) {
             buttonPositive: 'OK',
         },
         ).then(answere => {
-            console.log('scanning');
-            setLog('scanning')
+            console.log('Mencari Perangkat ...');
+            setLog('Mencari Perangkat ...')
             // display the Activityindicator
             BLTManager.startDeviceScan(null, null, (error, scannedDevice) => {
-                if (error) { console.warn(error) }
-                if (scannedDevice && scannedDevice.name == 'BLEExample') {
+                if (error) { 
+                    console.warn(error)
+                    Alert.alert(
+                        'Peringatan',
+                        `Pastikan Bluetooth dan Lokasi telah diaktifkan, ( ${error.message} )`,
+                        [ 
+                            { text: 'Kembali', onPress:()=>onPrevPress() },
+                            { text: 'Mode Manual', onPress:()=>{manualMode()} }
+                        ],
+                        { cancelable: false }
+                    )
+                }
+                if (scannedDevice && scannedDevice.name == 'SANDU') {
                     BLTManager.stopDeviceScan();
                     connectDevice(scannedDevice);
                 }
@@ -105,8 +116,8 @@ export default function InputTinggiScreen({route}) {
 
     // handle the device disconnection (poorly)
     async function disconnectDevice() {
-        console.log('Disconnecting start');
-        setLog('Disconnecting start')
+        console.log('Memutus Koneksi ....');
+        setLog('Memutus Koneksi ....')
         if (connectedDevice != null) {
             const isDeviceConnected = await connectedDevice.isConnected();
             if (isDeviceConnected) {
@@ -114,8 +125,8 @@ export default function InputTinggiScreen({route}) {
                 BLTManager.cancelTransaction('nightmodetransaction');
                 BLTManager.cancelDeviceConnection(connectedDevice.id)
                 .then(() => {
-                    console.log('DC completed')
-                    setLog('DC completed')
+                    console.log('Berhasil Memutus Koneksi')
+                    setLog('Berhasil Memutus Koneksi')
                 });
             }
 
@@ -126,8 +137,8 @@ export default function InputTinggiScreen({route}) {
 
     //Connect the device and start monitoring characteristics
     async function connectDevice(device) {
-        console.log('connecting to Device:', device.name);
-        setLog(`connecting to Device: ${device.name}`);
+        console.log('Menghubungkan ke perangkat:', device.name);
+        setLog(`Menghubungkan ke perangkat: ${device.name}`);
         device.connect()
         .then(device => {
             setConnectedDevice(device);
@@ -137,8 +148,8 @@ export default function InputTinggiScreen({route}) {
         .then(device => {
             //  Set what to do when DC is detected
             BLTManager.onDeviceDisconnected(device.id, (error, device) => {
-                console.log('Device Disconected');
-                setLog('Device Disconected')
+                console.log('Koneksi Terputus');
+                setLog('Koneksi Terputus')
                 setIsConnected(false);
             });
 
@@ -150,19 +161,25 @@ export default function InputTinggiScreen({route}) {
             device.monitorCharacteristicForService( SERVICE_UUID, MESSAGE_UUID,
                 (error, characteristic) => {
                     if (characteristic?.value != null) {
-                        setHeight(base64.decode(characteristic?.value));
+                        setHeight(base64.decode(characteristic?.value).split('-')[1]);
                         console.log(
                             'Message update received: ', 
-                            base64.decode(characteristic?.value),
+                            base64.decode(characteristic?.value).split('-')[1],
                         );
                     }
                 },
                 'messagetransaction',
             );
-            console.log('Connection established');
-            setLog('Connection established')
+            console.log('Berhasil terhubung');
+            setLog('Berhasil terhubung')
         });
     }
+
+    const manualMode = () => {
+        disconnectDevice(); setAuto(false); setHeight(0); setLog('Menggunakan Model Manual')
+    }
+
+    const dateNow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
 
     //======================== END BLE ========================//
     
@@ -173,10 +190,12 @@ export default function InputTinggiScreen({route}) {
                 <View style={styles.leftColor}></View>
                 <View style={styles.vCaption}>
                     <Text style={styles.txtNama}>{user.childs_name}</Text>
-                    <Text style={styles.txtNik}>{user.childs_nik}</Text>
+                    <View style={{flexDirection:'row'}}>
+                        <Text style={styles.txtNik}>{user.childs_nik}</Text>
+                        <Text style={[styles.txtNik, {fontWeight:'bold'}]}>{`(${Math.round((((dateNow - user.childs_birth)/2678400000) + Number.EPSILON) * 10)/10 || 0} bulan)`}</Text>
+                    </View>
                 </View>
             </View>
-
             <View style={styles.containerInput}>
                 <Text style={styles.txtCap}>Tinggi Badan</Text>
                 {
@@ -184,11 +203,13 @@ export default function InputTinggiScreen({route}) {
                         <Image source={Tinggi} style={styles.img}/>
                     ) : null
                 }
+
+                <Text style={styles.txtbb}>{`Berat Badan: ${route.params} Kg`}</Text>
                 
                 <View style={styles.txtCap}>
                     <TouchableOpacity 
                         style={[styles.btnBl,{backgroundColor:`${auto ? '#f2f2f2' : '#4397AF'}`}]}
-                        onPress={()=>{disconnectDevice(); setAuto(false); setHeight(0)}}
+                        onPress={()=>{manualMode()}}
                     >
                         <Text style={[styles.btnCap,{color:`${auto ? '#4397AF' : '#f2f2f2'}`}]}>Manual</Text>
                     </TouchableOpacity>
@@ -203,7 +224,8 @@ export default function InputTinggiScreen({route}) {
                     <View style={[styles.vInput,{display: auto ? 'flex' : 'none'}]}>
                         <Text style={styles.tCap}>{height}</Text>
                     </View>
-                    <TextInput style={[styles.vInput,{display: !auto ? 'flex' : 'none'}]} onChangeText={setHeight} value={height}/>
+                    <TextInput style={[styles.vInput,{display: !auto ? 'flex' : 'none'}]} onChangeText={setHeight} 
+                    textAlign={'center'} keyboardType={'numeric'} value={height}/>
                     <Text style={styles.tCap}>Cm</Text>
                 </View>
                 <Text>{log}</Text>
@@ -237,7 +259,7 @@ const styles = StyleSheet.create({
     },
 
     containerNama: {
-        marginTop: windowWidth *0.2,
+        marginTop: windowWidth *0.1,
         width: windowWidth * 0.8,
         height: windowHeight * 0.1,
         borderRadius: 10,
@@ -261,7 +283,7 @@ const styles = StyleSheet.create({
         marginLeft: windowWidth * 0.03,
         marginTop: windowHeight * 0.01,
         color:'#4397AF',
-        fontheight:'700',
+        fontWeight:'700',
     },
     
     txtNik:{ 
@@ -272,13 +294,21 @@ const styles = StyleSheet.create({
         fontheight:'400',
     },
 
+    txtbb:{ 
+        fontSize: windowWidth * 0.04,
+        marginBottom: windowHeight * 0.01,
+        color:'#4397AF',
+        fontheight:'400',
+    },
+
     containerInput:{
         marginTop: windowWidth *0.04,
         width: windowWidth * 0.8,
-        height: windowHeight * 0.64,
+        height: windowHeight * 0.68,
         borderRadius: 10,
         backgroundColor: 'white',
         alignItems: 'center',
+        paddingVertical: windowHeight * 0.01
     },
 
     img:{
