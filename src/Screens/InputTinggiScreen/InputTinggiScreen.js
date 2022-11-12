@@ -32,8 +32,16 @@ export default function InputTinggiScreen({route}) {
     const [user, setUser] = useState({})
     const [auto, setAuto] = useState(true)
 
-    const onPrevPress = () => { navigation.navigate('berat'); disconnectDevice() }
-    const onNextPress = () => { navigation.navigate('preview', { weight: route.params, height }); disconnectDevice() } 
+    const onPrevPress = async () => { 
+        await disconnectDevice() 
+        console.log('awawawa')
+        navigation.navigate('berat'); 
+    }
+    const onNextPress = async () => { 
+        await disconnectDevice()
+        console.log('oioioioi')
+        navigation.navigate('preview', { weight: route.params, height })
+    } 
     const getAlert = (title, message, button) => {
         return(
           Alert.alert( title, message, [{ text: button }] )
@@ -229,7 +237,7 @@ export default function InputTinggiScreen({route}) {
                     textAlign={'center'} keyboardType={'numeric'} value={height}/>
                     <Text style={styles.tCap}>Cm</Text>
                 </View>
-                <Text>{log}</Text>
+                <Text style={{color:'black'}}>{log}</Text>
                 <View style={styles.vBtn}>
                     <TouchableOpacity style={styles.tBtnPrev} onPress={onPrevPress}>
                         <Image source={Previous} style={styles.imgNav}/>

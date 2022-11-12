@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
         fontSize: windowWidth * 0.05,
         color: 'black',
         fontWeight: '600',
-        marginRight: windowHeight * 0.28,
+        // marginRight: windowHeight * 0.28,
         marginTop: windowHeight * 0.016,
         marginBottom: windowHeight * 0.01,
         

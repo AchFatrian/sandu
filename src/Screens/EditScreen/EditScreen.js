@@ -36,9 +36,9 @@ export default function EditScreen({route}) {
     const [childsName, setChildName] = useState(route.params.childs_name)
     const [childsNik, setChildNik] = useState(String(route.params.childs_nik))
     const [birthDate, setBirthDate] = useState(route.params.childs_birth)
-
-    const laki = [{"borderColor": "#4397AF", "color": "#4397AF", "id": "0", "label": "Laki-laki", "selected": true, "value": "laki"}, {"borderColor": "#4397AF", "color": "#4397AF", "id": "1", "label": "Perempuan", "selected": false, "value": "perempuan"}]
-    const perempuan = [{"borderColor": "#4397AF", "color": "#4397AF", "id": "0", "label": "Laki-laki", "selected": false, "value": "laki"}, {"borderColor": "#4397AF", "color": "#4397AF", "id": "1", "label": "Perempuan", "selected": true, "value": "perempuan"}]
+    
+    const laki = [{"labelStyle":{"color":"black"},"borderColor": "#4397AF", "color": "#4397AF", "id": "0", "label": "Laki-laki", "selected": true, "value": "laki"}, {"labelStyle":{"color":"black"},"borderColor": "#4397AF", "color": "#4397AF", "id": "1", "label": "Perempuan", "selected": false, "value": "perempuan"}]
+    const perempuan = [{"labelStyle":{"color":"black"},"borderColor": "#4397AF", "color": "#4397AF", "id": "0", "label": "Laki-laki", "selected": false, "value": "laki"}, {"labelStyle":{"color":"black"},"borderColor": "#4397AF", "color": "#4397AF", "id": "1", "label": "Perempuan", "selected": true, "value": "perempuan"}]
     
     const [radioButtons, setRadioButtons] = useState(laki);
 
@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
         fontSize: windowWidth * 0.04,
         borderColor: '#4397AF',
         borderWidth: 1,
+        color: 'black'
     },
 
     btnLogin:{

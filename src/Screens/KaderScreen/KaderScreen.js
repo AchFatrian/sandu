@@ -79,9 +79,10 @@ export default function KaderScreen() {
             <TextInput style={styles.txtPass} secureTextEntry={!passwordVisible} onChangeText={setPassword} value={password}/>
             <View style={styles.vCheckbox}>
                 <CheckBox
-                value={passwordVisible}
-                onValueChange={setPasswordVisible}
-                style={styles.checkbox}/>
+                    value={passwordVisible}
+                    onValueChange={setPasswordVisible}
+                    style={{borderColor:'black'}}
+                    tintColors={{ true:'black', false: 'black' }} />
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
 
@@ -133,6 +134,7 @@ const styles = StyleSheet.create({
         marginBottom: windowHeight * 0.007,
         borderColor: '#4397AF',
         borderWidth: 1,
+        color: 'black'
     },
 
     tPass: {
@@ -150,6 +152,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderColor: '#4397AF',
         borderWidth: 1,
+        color: 'black'
     },
 
     vCheckbox: { 
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: windowWidth * 0.34,
+        borderColor:'black'
     },
 
     label:{

@@ -43,14 +43,20 @@ export default function KaderScreen() {
             label: 'Laki-laki',
             value: 'laki',
             borderColor: '#4397AF',
-            color:'#4397AF'
+            color:'#4397AF',
+            labelStyle:{
+                color:'black'
+            }
         },
         {
             id: '1',
             label: 'Perempuan',
             value: 'perempuan',
             borderColor: '#4397AF',
-            color:'#4397AF'
+            color:'#4397AF',
+            labelStyle:{
+                color:'black'
+            }
         }
     ]);
    
@@ -258,6 +264,7 @@ const styles = StyleSheet.create({
         fontSize: windowWidth * 0.04,
         borderColor: '#4397AF',
         borderWidth: 1,
+        color: 'black'
     },
 
     btnLogin:{
@@ -304,5 +311,6 @@ const styles = StyleSheet.create({
         height: windowHeight * 0.052,
         // backgroundColor: '#4397af33',
         // flexDirection: 'row',
+        color: 'black'
     }
 })

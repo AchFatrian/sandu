@@ -32,8 +32,16 @@ export default function InputBeratScreen({route}) {
     const [user, setUser] = useState({})
     const [auto, setAuto] = useState(true)
 
-    const onPrevPress = () => { navigation.navigate('menu'); disconnectDevice() }
-    const onNextPress = () => { navigation.navigate('tinggi', weight), disconnectDevice() }
+    const onPrevPress = async () => { 
+        await disconnectDevice(); 
+        navigation.navigate('menu');  
+    }
+
+    const onNextPress = async () => { 
+        await disconnectDevice(); 
+        navigation.navigate('tinggi', weight); 
+    }
+
     const getAlert = (title, message, button) => {
         return(
           Alert.alert( title, message, [{ text: button }] )
@@ -45,7 +53,7 @@ export default function InputBeratScreen({route}) {
         .then((result) => {
             setUser(JSON.parse(result))
         }).catch((err) => {
-            getAlert("Error", `Terjadi Kesalahan Saat Mengambil Data, ( ${err.message} )`, "kembali")
+            getAlert("Error", `Terjadi Kesalahan Saat Mengambil Data , ( ${err.message} )`, "kembali")
         });
     }
     
@@ -227,7 +235,7 @@ export default function InputBeratScreen({route}) {
                 textAlign={'center'} keyboardType={'numeric'} onChangeText={setWeight} value={weight}/>
                 <Text style={styles.tCap}>Kg</Text>
             </View>
-            <Text>{log}</Text>
+            <Text style={{color:'black'}}>{log}</Text>
             <View style={styles.vBtn}>
                 <TouchableOpacity style={styles.tBtnPrev} onPress={onPrevPress}>
                     <Image source={Previous} style={styles.imgNav}/>
