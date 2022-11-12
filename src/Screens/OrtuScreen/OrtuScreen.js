@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Dimensions, Image, TextInput, 
-  TouchableOpacity, Keyboard, Alert } from 'react-native'
+  TouchableOpacity, Keyboard, Alert, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto5.png'
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,7 @@ export default function OrtuScreen() {
 
   const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
   const [childsNik, setChildNik] = useState('')
+  const [isLoading, setLoading] = useState(false)
 
   const onDaftarPress = () => {
     navigation.navigate('daftar');
@@ -31,6 +32,7 @@ export default function OrtuScreen() {
   const saveAuth = async (userData) => {
     EncryptedStorage.setItem("user", JSON.stringify({role: 'ortu', data: userData}))
     .then((result) => {
+      setLoading(false)
       navigation.navigate('riwayatAnak', {id: userData._id, state: 'user'});
     }).catch((err) => {
         getAlert("Error", `Terjadi Kesalahan Saat Menyimpan sesi. ( ${err.message} )`, "kembali")
@@ -39,6 +41,7 @@ export default function OrtuScreen() {
 
   const login = async () => {
     // navigation.navigate('riwayat');
+    setLoading(true)
     if (childsNik != '') {
       axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users/login/${Number(childsNik)}`)
         .then((result) => {
@@ -79,9 +82,17 @@ return (
           }
           <Text style={styles.tName}>NIK ANAK :</Text>
           <TextInput style={styles.txtInput} onChangeText={setChildNik} value={childsNik}/>
-          <TouchableOpacity style={styles.btnLogin} onPress={()=>login()}>
-              <Text style={styles.btnCap}>Login</Text>
-          </TouchableOpacity>
+
+          {
+            (isLoading) ? (
+                <ActivityIndicator size="large" />
+            ) : (
+              <TouchableOpacity style={styles.btnLogin} onPress={()=>login()}>
+                <Text style={styles.btnCap}>Login</Text>
+            </TouchableOpacity>
+            )
+          }
+
           <View style={styles.vDaftar}>
             <Text style={styles.tcap1}>Belum Punya Akun?</Text>
             <TouchableOpacity style={styles.tDaftar} 

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import React, {useState, useEffect, useCallback} from 'react'
 import Back from '../../../assets/img/back.png'
 import Input from '../../../assets/img/input.png'
@@ -12,6 +12,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function PreviewScreen({route}) {
     const navigation = useNavigation('');
     const [user, setUser] = useState({})
+    const [isLoading, setLoading] = useState(false)
 
     const onBackPress = () => {
         navigation.navigate('tinggi', route.params.weight);
@@ -36,6 +37,7 @@ export default function PreviewScreen({route}) {
     }
 
     const sendData = async () => {
+        setLoading(true)
         const dateNow = new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate()).getTime()
         const dataStatus = {
             "gender": user.childs_gender == 'laki' ? 1 : user.childs_gender == 'perempuan' ? 0 : null,
@@ -59,6 +61,7 @@ export default function PreviewScreen({route}) {
             axios.post('https://harlequin-bullfrog-tie.cyclic.app/api/users/data', data)
             .then((result) => {
                 console.log(result.data)
+                setLoading(false)
                 navigation.navigate('listAnak');
             }).catch((err) => {
                 getAlert("Error", `Terjadi Kesalahan Saat Menyimpan Data, ( ${err.message} )`, "kembali")
@@ -99,9 +102,15 @@ export default function PreviewScreen({route}) {
         <View style={styles.vInput}>
             <Text style={styles.tCap}>{route.params.weight} Kg</Text>
         </View>
-        <TouchableOpacity style={styles.btnSave} onPress={()=>sendData()}>
-                <Text style={styles.btnCap}>Simpan</Text>
-        </TouchableOpacity>
+        {
+            (isLoading) ? (
+                <ActivityIndicator size="large" />
+            ) : (
+                <TouchableOpacity style={styles.btnSave} onPress={()=>sendData()}>
+                    <Text style={styles.btnCap}>Simpan</Text>
+                </TouchableOpacity>
+            )
+        }
       </View>
     </View>
   )

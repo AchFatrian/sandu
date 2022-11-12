@@ -34,7 +34,7 @@ const InputRiwayat = ({data, birthDate, name, del, status}) =>{
                         <Image source={Hapus} style={styles.img}/>
                     </TouchableOpacity>
                 </View>
-                <ScrollView style={styles.controlScroll}>
+                <ScrollView style={styles.controlScroll} horizontal={true}>
                     <View style={styles.vRows}>
                         <View style={styles.vCapImg}>
                             <View style={styles.vImg}>
@@ -63,9 +63,7 @@ const InputRiwayat = ({data, birthDate, name, del, status}) =>{
                                 <Text style={styles.textCaption}>{Math.round((((dateNow - birthDate)/2678400000) + Number.EPSILON) * 10)/10 || 0} bln</Text>
                             </View>
                         </View>
-                    </View>
-                    <View style={styles.vRows2}>
-                        <View style={styles.vCapImgStatus}>
+                        <View style={styles.vCapImg}>
                             <View style={styles.vImg}>
                                 <Text style={styles.txtCapImg}>Status Tinggi</Text> 
                                 <Image source={StatusTinggi} style={styles.image}/>
@@ -74,7 +72,7 @@ const InputRiwayat = ({data, birthDate, name, del, status}) =>{
                                 <Text style={styles.textCaption}>{data.status_h}</Text>
                             </View>
                         </View>
-                        <View style={styles.vCapImgStatus}>
+                        <View style={styles.vCapImg}>
                             <View style={styles.vImg}>
                                 <Text style={styles.txtCapImg}>Status Berat</Text> 
                                 <Image source={StatusBerat} style={styles.image}/>
@@ -140,24 +138,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: 'center',
         flexDirection: 'row',
-
-    },
-
-    vRows2:{
-        width: '100%',
-        height: windowHeight * 0.19,
-        // borderWidth: 1,
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        flexDirection: 'row',
-        
+        marginHorizontal: windowWidth * 0.03,
+        paddingRight: windowWidth * 0.08
     },
 
     vCapImg: {
-        width: '30%',
+        width: '20%',
         height: '85%',
+        paddingHorizontal: windowWidth * 0.035
         // borderWidth: 1,
-        alignItems: 'center',
+        // alignItems: 'center',
     },
     
     vImg: {

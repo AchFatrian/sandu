@@ -103,6 +103,7 @@ export default function InputTinggiScreen({route}) {
                         { cancelable: false }
                     )
                 }
+                // if (scannedDevice && scannedDevice.name == 'BLEExample') {
                 if (scannedDevice && scannedDevice.name == 'SANDU') {
                     BLTManager.stopDeviceScan();
                     connectDevice(scannedDevice);

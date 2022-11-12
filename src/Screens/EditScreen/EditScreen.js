@@ -6,7 +6,7 @@ import { Text,
     TextInput, 
     TouchableOpacity, 
     Keyboard, 
-    Alert, Button } from 'react-native'
+    Alert, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -28,6 +28,7 @@ export default function EditScreen({route}) {
     const [date, setDate] = useState(new Date(route.params.childs_birth));
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
+    const [isLoading, setLoading] = useState(false)
     
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
     const [parentsName, setParentsName ] = useState(route.params.parents_name)
@@ -71,6 +72,7 @@ export default function EditScreen({route}) {
       }
 
     const register = async () => {
+        setLoading(true)
         if(parentsName != '' && phoneNum != '' &&  childsName != '' && childsNik != '' && birthDate != 1193051730000){
             const updatedData = {
                 user_id: route.params._id,
@@ -87,6 +89,7 @@ export default function EditScreen({route}) {
             axios.put(`https://harlequin-bullfrog-tie.cyclic.app/api/users`, updatedData)
             .then((result) => {
                 console.log(result.data)
+                setLoading(false)
                 navigation.navigate('listAnak');
             }).catch((err) => {
                 getAlert("Pendaftaran gagal", `Terjadi Error (${err.message})`, "kembali")
@@ -152,9 +155,17 @@ export default function EditScreen({route}) {
                     layout='row'
                 />
             </View>
-            <TouchableOpacity style={styles.btnLogin} onPress={()=>register()}>
-                <Text style={styles.btnCap}>Simpan</Text>
-            </TouchableOpacity>
+
+            {
+                (isLoading) ? (
+                    <ActivityIndicator size="large" />
+                ) : (
+                    <TouchableOpacity style={styles.btnLogin} onPress={()=>register()}>
+                        <Text style={styles.btnCap}>Simpan</Text>
+                    </TouchableOpacity>
+                )
+            }
+
         </View>
   )
 }

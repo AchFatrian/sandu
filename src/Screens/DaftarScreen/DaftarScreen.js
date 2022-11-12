@@ -6,7 +6,7 @@ import { Text,
     TextInput, 
     TouchableOpacity, 
     Keyboard, 
-    Alert, Button } from 'react-native'
+    Alert, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto6.png'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -20,20 +20,22 @@ import RadioGroup from 'react-native-radio-buttons-group';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const dateNow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
 
 export default function KaderScreen() {
     const navigation = useNavigation('');
 
-    const [date, setDate] = useState(new Date(1193051730000));
+    const [date, setDate] = useState(new Date(dateNow));
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
+    const [isLoading, setLoading] = useState(false)
     
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false)
     const [parentsName, setParentsName ] = useState('')
     const [phoneNum, setPhoneNum] = useState('')
     const [childsName, setChildName] = useState('')
     const [childsNik, setChildNik] = useState('')
-    const [birthDate, setBirthDate] = useState(1193051730000)
+    const [birthDate, setBirthDate] = useState(dateNow)
     
     const [radioButtons, setRadioButtons] = useState([
         {
@@ -80,6 +82,7 @@ export default function KaderScreen() {
       }
 
     const register = async () => {
+        setLoading(true)
         if(parentsName != '' && phoneNum != '' &&  childsName != '' && childsNik != '' && birthDate != 1193051730000){
             const regisData = {
                 childs_name: childsName,
@@ -100,6 +103,7 @@ export default function KaderScreen() {
                 axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/users`, regisData)
                 .then((result) => {
                     if(result.data.status == 'success'){
+                        setLoading(false)
                         navigation.navigate('ortu');
                     }
                     else {
@@ -169,9 +173,17 @@ export default function KaderScreen() {
                     layout='row'
                 />
             </View>
-            <TouchableOpacity style={styles.btnLogin} onPress={()=>register()}>
-                <Text style={styles.btnCap}>Daftar</Text>
-            </TouchableOpacity>
+
+            {
+                (isLoading) ? (
+                    <ActivityIndicator size="large" />
+                ) : (
+                    <TouchableOpacity style={styles.btnLogin} onPress={()=>register()}>
+                        <Text style={styles.btnCap}>Daftar</Text>
+                    </TouchableOpacity>
+                )
+            }
+            
         </View>
   )
 }
@@ -190,7 +202,7 @@ const styles = StyleSheet.create({
     },
 
     tName:{
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.39,
@@ -198,7 +210,7 @@ const styles = StyleSheet.create({
     },
 
     tNoHP: {
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.57,
@@ -206,7 +218,7 @@ const styles = StyleSheet.create({
     },
 
     tAnak: {
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.47,
@@ -214,7 +226,7 @@ const styles = StyleSheet.create({
     },
 
     tNik:{ 
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.51,
@@ -222,7 +234,7 @@ const styles = StyleSheet.create({
     },
 
     tTanggal:{
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.34,
@@ -275,12 +287,12 @@ const styles = StyleSheet.create({
     },
 
     txtTanggal:{
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         color: 'black',
     },
 
     tKelamin:{
-        fontSize: windowWidth * 0.045,
+        fontSize: windowWidth * 0.038,
         fontWeight: '600',
         color: 'black',
         marginRight: windowWidth * 0.32,

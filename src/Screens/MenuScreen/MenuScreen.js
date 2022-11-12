@@ -8,7 +8,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+const dateNow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
 export default function MenuScreen() {
     const navigation = useNavigation('');
     const [user, setUser] = useState({});
@@ -30,6 +30,16 @@ export default function MenuScreen() {
           Alert.alert(
             title, message,
             [{ text: button }]
+          )
+        )
+      }
+
+      const profil = () => {
+        return(
+          Alert.alert(
+            "Profil Anda", 
+            `*Jika ada kesalahan data, silahkan menghubungi kader untuk merubah data\n\nNIK Anak : ${user.childs_nik}\nNama Anak : ${user.childs_name}\nNama Orang Tua : ${user.parents_name}\nTgl Lahir : ${user.childs_birth}\nJenis Kelamin : ${user.childs_gender == 'laki' ? 'laki - laki' : 'perempuan'}\nNo.HP : ${user.parents_phone}`,
+            [{ text: "kembali" }]
           )
         )
       }
@@ -58,11 +68,11 @@ export default function MenuScreen() {
         <View style={styles.containerNama} >
            <View style={styles.leftColor}></View>
            <View style={styles.vCaption}>
-                <Text style={styles.txtNama}>Profil Anak</Text>
+                {/* <Text style={styles.txtNama}>Profil Anak</Text> */}
                 <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Nama Anak :</Text> {user.childs_name}</Text>
                 <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>NIK Anak : </Text>{user.childs_nik}</Text>
                 <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Nama Ortu : </Text>{user.parents_name}</Text>
-                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Tgl Lahir : </Text>{new Date(user.childs_birth).toLocaleDateString()}</Text>
+                <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Tgl Lahir : </Text>{`${new Date(user.childs_birth).toLocaleDateString()} ( ${Math.round((((dateNow - user.childs_birth)/2678400000) + Number.EPSILON) * 10)/10 || 0} bulan )`}</Text>
                 <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>Jenis Kelamin : </Text>{user.childs_gender == 'laki' ? 'laki - laki' : 'perempuan'}</Text>
                 <Text style={styles.txtNik}><Text style={{fontWeight:'bold'}}>No.HP : </Text>{user.parents_phone}</Text>
            </View>

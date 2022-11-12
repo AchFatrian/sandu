@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity, 
+    Alert, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import InputAnak from '../../component/InputAnak/InputAnak'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -11,7 +12,8 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function ListAnakScreen() {
     const [users, setUsers] = useState([])
-    
+    const [isLoading, setLoading] = useState(false)
+
     const navigation = useNavigation('');
     const onMenuPress = (user) => {
         EncryptedStorage.setItem(
@@ -35,21 +37,34 @@ export default function ListAnakScreen() {
       }
 
     const getUsers = async () => {
+        setLoading(true)
         axios.get(`https://harlequin-bullfrog-tie.cyclic.app/api/users`)
         .then((result) => {
             setUsers(result.data)
+            setLoading(false)
         }).catch((err) => {
           getAlert("Error", "Terjadi Kesalahan Saat Menampilkan Data", "kembali")
         });
     }
 
     const deleteUser = async (id) => {
-        axios.delete(`https://harlequin-bullfrog-tie.cyclic.app/api/users`,{ data: {user_id: id} })
+        // setLoading(true)
+        // axios.delete(`https://harlequin-bullfrog-tie.cyclic.app/api/users`,{ data: {user_id: id} })
+        // .then((result) => {
+        //     getUsers()
+        // }).catch((err) => {
+        //   getAlert("Error", "Terjadi Kesalahan Menghapus Data", "kembali")
+        // });
+        
+        setLoading(true)
+        axios.put(`https://harlequin-bullfrog-tie.cyclic.app/api/users/softdel`,{ user_id: id })
         .then((result) => {
+            console.log(result.data)
             getUsers()
         }).catch((err) => {
           getAlert("Error", "Terjadi Kesalahan Menghapus Data", "kembali")
         });
+
     }
 
     const logout = async () => {
@@ -74,20 +89,27 @@ export default function ListAnakScreen() {
                 <Text style={styles.txtTittle}>List Data Anak</Text>
             </View>
             
-            <ScrollView style={styles.scrollContainer}>
-                { users.map((prop, key) => {
-                    return(
-                        <InputAnak
-                            onPress={()=>onMenuPress(prop)}
-                            nama={prop.childs_name}
-                            nik={prop.childs_nik}
-                            id={prop._id}
-                            key={key}
-                            del={()=>deleteUser(prop._id)}
-                        />
-                    )
-                })}
-            </ScrollView>
+            {
+                (isLoading) ? (
+                    <ActivityIndicator size="large" />
+                ) : (
+                    <ScrollView style={styles.scrollContainer}>
+                        { users.map((prop, key) => {
+                            return(
+                                <InputAnak
+                                    onPress={()=>onMenuPress(prop)}
+                                    nama={prop.childs_name}
+                                    nik={prop.childs_nik}
+                                    id={prop._id}
+                                    key={key}
+                                    del={()=>deleteUser(prop._id)}
+                                />
+                            )
+                        })}
+                    </ScrollView>
+                )
+            }
+            
             <TouchableOpacity style={styles.btnLogOut}>
                 <Text style={styles.btnCap} onPress={()=>{logout()}}>
                     Keluar

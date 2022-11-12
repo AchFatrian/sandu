@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Dimensions, Image, TextInput, 
-    TouchableOpacity, Keyboard, Alert} from 'react-native'
+    TouchableOpacity, Keyboard, Alert, ActivityIndicator} from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import React, { useState, useEffect } from "react"
 import Logo from '../../../assets/img/foto4.png'
@@ -15,7 +15,7 @@ export default function KaderScreen() {
     const [isKeyboarVisible, setIsKeyboardVisible] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    const [isLoading, setLoading] = useState(false)
     const navigation = useNavigation('');
 
     const getAlert = (title, message, button) => {
@@ -30,6 +30,7 @@ export default function KaderScreen() {
     const saveAuth = async (userData) => {
         EncryptedStorage.setItem("user", JSON.stringify({role: 'kader', data: userData}))
         .then((result) => {
+            setLoading(false)
             navigation.navigate('listAnak');
         }).catch((err) => {
             getAlert("Error", `Terjadi Kesalahan Saat Menyimpan sesi. ( ${err.message} )`, "kembali")
@@ -37,6 +38,7 @@ export default function KaderScreen() {
     }
 
     const onLoginPress = async () => {
+        setLoading(true)
         // navigation.navigate('listAnak');
         if (username != '' && password != '') {
             axios.post(`https://harlequin-bullfrog-tie.cyclic.app/api/kader/login`, {username, password})
@@ -82,9 +84,16 @@ export default function KaderScreen() {
                 style={styles.checkbox}/>
                 <Text style={styles.label}>Tampilkan Password</Text>
             </View>
-            <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
-                <Text style={styles.btnCap}>Masuk</Text>
-            </TouchableOpacity>
+
+            {
+                (isLoading) ? (
+                    <ActivityIndicator size="large" />
+                ) : (
+                    <TouchableOpacity style={styles.btnLogin} onPress={onLoginPress}>
+                        <Text style={styles.btnCap}>Masuk</Text>
+                    </TouchableOpacity>
+                )
+            }
         </View>
   )
 }
