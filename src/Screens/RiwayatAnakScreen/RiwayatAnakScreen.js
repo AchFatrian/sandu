@@ -106,7 +106,7 @@ export default function RiwayatAnakScreen({route}) {
               <ActivityIndicator size="large" />
           ) : (
             <ScrollView style={styles.scrollContainer}>
-              { data.map((prop, key) => {
+              { data.reverse().map((prop, key) => {
                   return(
                       <Riwayat 
                         data={prop} 
