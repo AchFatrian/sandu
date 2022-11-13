@@ -49,6 +49,17 @@ export default function StartScreen() {
             <Text style={styles.textBtn}>Kader</Text>
           </View>
       </TouchableOpacity>
+      <View style={styles.copyright}>
+          <Text style={{color:'black', marginHorizontal:windowWidth*0.1, textAlign:'center', fontSize:windowWidth*0.02}}>
+            {`[v1.0] Pengabdian Masyarakat, Program Studi Sains Data Terapan, Departemen Teknik Informatika dan Komputer, Politeknik Elektronika Negeri Surabaya`}
+          </Text>
+          {/* <Text style={{color:'black', marginHorizontal:windowWidth*0.1, textAlign:'center', fontSize:windowWidth*0.026}}>
+            {`[v1.0] Copyright © 2022 Program Studi Sains Data Terapan, Departemen Teknik Informatika dan Komputer, Politeknik Elektronika Negeri Surabaya`}
+          </Text> */}
+          {/* <Text style={{color:'black', marginHorizontal:windowWidth*0.2, textAlign:'center', fontSize:windowWidth*0.03}}>
+            {`v1.0`}
+          </Text> */}
+      </View>
     </View>
   )
 }
@@ -93,6 +104,13 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  copyright:{
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: windowHeight * 0.03
   },
 
   textBtn: {
