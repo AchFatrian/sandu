@@ -9,6 +9,7 @@ const axios = require('axios')
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const dateNow = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
 
 export default function RiwayatAnakScreen({route}) {
     const navigation = useNavigation('');
@@ -28,10 +29,11 @@ export default function RiwayatAnakScreen({route}) {
       }
 
       const profil = () => {
+        let birth = `${new Date(allData.childs_birth).toLocaleDateString()} ( ${Math.round((((dateNow - allData.childs_birth)/2678400000) + Number.EPSILON) * 10)/10} bulan )`
         return(
           Alert.alert(
             "Profil Anda", 
-            `*Jika ada kesalahan data, silahkan menghubungi kader untuk merubah data\n\nNIK Anak : ${allData.childs_nik}\nNama Anak : ${allData.childs_name}\nNama Orang Tua : ${allData.parents_name}\nTgl Lahir : ${allData.childs_birth}\nJenis Kelamin : ${allData.childs_gender == 'laki' ? 'laki - laki' : 'perempuan'}\nNo.HP : ${allData.parents_phone}`,
+            `*Jika ada kesalahan data, silahkan menghubungi kader untuk merubah data\n\nNIK Anak : ${allData.childs_nik}\nNama Anak : ${allData.childs_name}\nNama Orang Tua : ${allData.parents_name}\nTgl Lahir : ${birth}\nJenis Kelamin : ${allData.childs_gender == 'laki' ? 'laki - laki' : 'perempuan'}\nNo.HP : ${allData.parents_phone}`,
             [{ text: "kembali" }]
           )
         )

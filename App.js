@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,10 +19,22 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { LogBox } from 'react-native';
 import Navigation from './src/Navigation';
+import codePush from 'react-native-code-push';
 
 LogBox.ignoreAllLogs();
 
+let codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
+
+// MyApp = codePush(codePushOptions)(MyApp);
+
 const App = () => {
+  useEffect(() => {
+    codePush.sync({
+      updateDialog: true,
+      installMode: codePush.InstallMode.IMMEDIATE
+    });
+  }, [])
+  
   return (
       <SafeAreaView style={styles.root}>
         <Navigation />
@@ -36,4 +48,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f6f4'
   }
 });
-export default App;
+
+export default codePush(codePushOptions)(App);
